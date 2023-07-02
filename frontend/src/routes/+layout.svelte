@@ -18,7 +18,8 @@
 		type ModalComponent
 	} from '@skeletonlabs/skeleton';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import CardModal from '$lib/components/CardModal.svelte';
+	import CardModal from '$lib/components/Modals/CardModal.svelte';
+	import CreateLoanModal from '$lib/components/Modals/CreateLoanModal.svelte';
 
 	const t: ToastSettings = {
 		message: 'menu opened'
@@ -33,6 +34,9 @@
 		// Custom Modal 1
 		card: {
 			ref: CardModal
+		},
+		createLoan: {
+			ref: CreateLoanModal
 		}
 	};
 </script>
@@ -43,12 +47,13 @@
 	<Navigation />
 </Drawer>
 
-<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
+<AppShell>
 	<svelte:fragment slot="header"
-		><AppBar>
+		><AppBar background="bg-surface-500" padding="px-8 py-4">
 			<svelte:fragment slot="lead">
-				<a href="/"><strong class="text-4xl">Basket</strong></a></svelte:fragment
+				<a href="/"><strong class="text-4xl">Loan Auction</strong></a></svelte:fragment
 			>
+			<Navigation />
 			<svelte:fragment slot="trail">
 				<button class="md:hidden btn btn-sm" on:click={drawerOpen}>
 					<span>
@@ -59,25 +64,20 @@
 						</svg>
 					</span>
 				</button>
-				<Avatar
-					initials="JD"
-					background="bg-primary-500"
-					width="w-10"
-					class="hidden md:block"
-				/></svelte:fragment
+				<div class="flex w-[234px] justify-end">
+					<Avatar initials="JD" background="bg-primary-500" width="w-10" class="hidden md:block" />
+				</div></svelte:fragment
 			>
 		</AppBar>
 	</svelte:fragment>
-	<svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
 
 	<!-- (sidebarLeft) -->
 	<!-- (sidebarRight) -->
 	<!-- (pageHeader) -->
 	<!-- Router Slot -->
-	<div class="container p-10 mx-auto">
+	<div class="w-full">
 		<slot />
 	</div>
 	<!-- ---- / ---- -->
 	<!-- (pageFooter) -->
-	<svelte:fragment slot="footer">Footer</svelte:fragment>
 </AppShell>

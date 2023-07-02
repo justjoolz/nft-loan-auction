@@ -3,3 +3,19 @@ html,
 body {
 	@apply h-full overflow-hidden;
 }
+
+.flexColumnCenter {
+	@apply flex flex-col justify-center items-center;
+}
+.flexRowCenter {
+	@apply flex justify-center items-center;
+}
+.gridDisplay {
+	@apply w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+}
+.gridDisplay2 {
+	@apply w-full grid grid-cols-1 md:grid-cols-2;
+}
+.hoverShadow {
+	@apply hover:scale-[101%] transition-all duration-300 hover:shadow-[0_2px_10px_-2.5px] hover:shadow-primary-600;
+}
