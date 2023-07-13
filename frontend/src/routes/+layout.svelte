@@ -1,49 +1,107 @@
-<script lang='ts'>
+<script lang="ts">
 	// The ordering of these imports is critical to your app working properly
-	import '@skeletonlabs/skeleton/themes/theme-gold-nouveau.css';
+	import '../theme.postcss';
 	// If you have source.organizeImports set to true in VSCode, then it will auto change this ordering
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	// Most of your app wide CSS should be put in this file
 	import '../app.postcss';
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+	import {
+		AppBar,
+		AppShell,
+		Avatar,
+		Drawer,
+		Toast,
+		drawerStore,
+		toastStore,
+		type ToastSettings,
+		Modal,
+		type ModalComponent
+	} from '@skeletonlabs/skeleton';
+	import Navigation from '$lib/components/Navigation.svelte';
+	import CardModal from '$lib/components/Modals/CardModal.svelte';
+	import CreateLoanModal from '$lib/components/Modals/CreateLoanModal.svelte';
+	import { authenticate } from '@onflow/fcl';
+	import { onDestroy, onMount } from 'svelte';
+	import type { CurrentUser } from '@onflow/fcl/types/current-user';
+	import { handleUserChange } from '../flow/actions';
+	import { setupFCL } from '../flow/config';
+	import { user, transactionStatus } from '../flow/stores';
+	import * as fcl from '@onflow/fcl';
+
+	const t: ToastSettings = {
+		message: 'menu opened'
+	};
+
+	function drawerOpen() {
+		drawerStore.open();
+		toastStore.trigger(t);
+	}
+
+	const modalComponentRegistry: Record<string, ModalComponent> = {
+		// Custom Modal 1
+		card: {
+			ref: CardModal
+		},
+		createLoan: {
+			ref: CreateLoanModal
+		}
+	};
+
+	let txUnsub: Function;
+	let userUnsub: Function;
+
+	onMount(() => {
+		setupFCL();
+		fcl.currentUser.subscribe((data: CurrentUser) => user.set(data));
+		userUnsub = user.subscribe(handleUserChange);
+		txUnsub = transactionStatus.subscribe((value) => {
+			console.log('transactionStatus changed', { value });
+		});
+	});
+
+	onDestroy(() => {
+		if (userUnsub) userUnsub();
+		if (txUnsub) txUnsub();
+	});
 </script>
 
-<!-- App Shell -->
+<Toast position="br" />
+<Modal components={modalComponentRegistry} />
+<Drawer>
+	<Navigation />
+</Drawer>
+
 <AppShell>
-	<svelte:fragment slot="header">
-		<!-- App Bar -->
-		<AppBar>
+	<svelte:fragment slot="header"
+		><AppBar background="bg-surface-500" padding="px-8 py-4">
 			<svelte:fragment slot="lead">
-				<strong class="text-xl uppercase">Skeleton</strong>
-			</svelte:fragment>
+				<a href="/"><strong class="text-4xl">Loan Auction</strong></a></svelte:fragment
+			>
+			<Navigation />
 			<svelte:fragment slot="trail">
-				<a
-					class="btn btn-sm variant-ghost-surface"
-					href="https://discord.gg/EXqV7W8MtY"
-					target="_blank"
-					rel="noreferrer"
-				>
-					Discord
-				</a>
-				<a
-					class="btn btn-sm variant-ghost-surface"
-					href="https://twitter.com/SkeletonUI"
-					target="_blank"
-					rel="noreferrer"
-				>
-					Twitter
-				</a>
-				<a
-					class="btn btn-sm variant-ghost-surface"
-					href="https://github.com/skeletonlabs/skeleton"
-					target="_blank"
-					rel="noreferrer"
-				>
-					GitHub
-				</a>
-			</svelte:fragment>
+				<button class="md:hidden btn btn-sm" on:click={drawerOpen}>
+					<span>
+						<svg viewBox="0 0 100 100" class="fill-token w-4 h-4">
+							<rect width="100" height="20" />
+							<rect y="40" width="100" height="20" />
+							<rect y="80" width="100" height="20" />
+						</svg>
+					</span>
+				</button>
+				<div class="flex w-[234px] justify-end" on:click={authenticate}>
+					<Avatar initials="JD" background="bg-primary-500" width="w-10" class="hidden md:block" />
+				</div></svelte:fragment
+			>
 		</AppBar>
 	</svelte:fragment>
-	<!-- Page Route Content -->
-	<slot />
+
+	<!-- (sidebarLeft) -->
+	<!-- (sidebarRight) -->
+	<!-- (pageHeader) -->
+	<!-- Router Slot -->
+	<div class="w-full">
+		<slot />
+	</div>
+	<!-- ---- / ---- -->
+	<!-- (pageFooter) -->
 </AppShell>
