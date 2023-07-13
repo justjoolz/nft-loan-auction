@@ -39,5 +39,9 @@
 		"vite": "^4.3.0",
 		"vitest": "^0.25.3"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@onflow/fcl": "^1.4.1",
+		"flow-native-token-registry": "^0.1.4"
+	}
 }

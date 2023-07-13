@@ -20,6 +20,13 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import CardModal from '$lib/components/Modals/CardModal.svelte';
 	import CreateLoanModal from '$lib/components/Modals/CreateLoanModal.svelte';
+	import { authenticate } from '@onflow/fcl';
+	import { onDestroy, onMount } from 'svelte';
+	import type { CurrentUser } from '@onflow/fcl/types/current-user';
+	import { handleUserChange } from '../flow/actions';
+	import { setupFCL } from '../flow/config';
+	import { user, transactionStatus } from '../flow/stores';
+	import * as fcl from '@onflow/fcl';
 
 	const t: ToastSettings = {
 		message: 'menu opened'
@@ -39,6 +46,23 @@
 			ref: CreateLoanModal
 		}
 	};
+
+	let txUnsub: Function;
+	let userUnsub: Function;
+
+	onMount(() => {
+		setupFCL();
+		fcl.currentUser.subscribe((data: CurrentUser) => user.set(data));
+		userUnsub = user.subscribe(handleUserChange);
+		txUnsub = transactionStatus.subscribe((value) => {
+			console.log('transactionStatus changed', { value });
+		});
+	});
+
+	onDestroy(() => {
+		if (userUnsub) userUnsub();
+		if (txUnsub) txUnsub();
+	});
 </script>
 
 <Toast position="br" />
@@ -64,7 +88,7 @@
 						</svg>
 					</span>
 				</button>
-				<div class="flex w-[234px] justify-end">
+				<div class="flex w-[234px] justify-end" on:click={authenticate}>
 					<Avatar initials="JD" background="bg-primary-500" width="w-10" class="hidden md:block" />
 				</div></svelte:fragment
 			>
