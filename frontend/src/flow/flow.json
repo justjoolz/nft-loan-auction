@@ -56,9 +56,17 @@
         "ExampleNFT": "./contracts/lib/ExampleNFT.cdc",
         "VaultNFT": "./contracts/VaultNFT.cdc",
         "Basket": {
+            "source": "./contracts/Basket.cdc",
+            "aliases": {
+                "testnet": "0xca909b58fecc185a",
+                "mainnet": "0x15108c416204569e"
+            }
+        },
+        "NFTLoanAuction": {
             "source": "./contracts/NFTLoanAuction.cdc",
             "aliases": {
-                "testnet": "0xca909b58fecc185a"
+                "testnet": "0x921cd899edb601be",
+                "mainnet": "0x41e57fc3739f6180"
             }
         }
     },
