@@ -20,23 +20,25 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import CardModal from '$lib/components/Modals/CardModal.svelte';
 	import CreateLoanModal from '$lib/components/Modals/CreateLoanModal.svelte';
-
-	const t: ToastSettings = {
-		message: 'menu opened'
-	};
+	import ActiveLoanModal from '$lib/components/Modals/ActiveLoanModal.svelte';
+	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';	
 
 	function drawerOpen() {
 		drawerStore.open();
-		toastStore.trigger(t);
 	}
 
 	const modalComponentRegistry: Record<string, ModalComponent> = {
-		// Custom Modal 1
 		card: {
 			ref: CardModal
 		},
 		createLoan: {
 			ref: CreateLoanModal
+		},
+		'active-loan': {
+			ref: ActiveLoanModal
+		},
+		'loan-request': {
+			ref: LoanRequestModal
 		}
 	};
 </script>

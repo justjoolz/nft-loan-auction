@@ -10,9 +10,7 @@
 	}
 </script>
 
-<div
-	class="flex flex-col justify-center items-center w-full min-h-[94vh] bg-no-repeat bg-cover bg-center bg-surface-50 bg-[url('$lib/assets/hero-back.jpeg')]"
->
+<div class="flex flex-col justify-center items-center w-full hero-back">
 	<div class="flex flex-col w-2/3 h-[500px] gap-y-4">
 		<h1 class="text-8xl font-[800] -ml-1">LoanAuction</h1>
 		<p class="text-lg">

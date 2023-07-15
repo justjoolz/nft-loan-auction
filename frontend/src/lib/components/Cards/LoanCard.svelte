@@ -5,16 +5,16 @@
 	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
 
-	export let loan: any = {};
+	export let loan: any = {};	
+
 	function modalComponentImage(loan: any): void {
 		const modal: ModalSettings = {
 			type: 'component',
-			component: 'card',
+			component: loan.type === 'request' ? 'loan-request' : 'active-loan',
 			meta: loan
 		};
 		modalStore.trigger(modal);
 	}
-	console.log(loan);
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -33,20 +33,19 @@
 				{/each}
 			</div>
 		{/if}
+	</div>
 
+	<div class="flexColumnCenter gap-2">
 		{#if loan.items[1].fts.length > 0}
 			<div class="flexRowCenter pt-2">
 				<p class="font-bold">Fungible Tokens</p>
 			</div>
-			<div class="gridDisplay2 gap-2">
+			<div class="gridDisplay2 gap-2 pb-4">
 				{#each loan.items[1].fts as ft}
 					<FtCard {ft} />
 				{/each}
 			</div>
 		{/if}
-	</div>
-
-	<div class="flexColumnCenter pt-3">
 		{#if loan.type === 'active'}
 			<LoanDetails {loan} />
 		{:else if loan.type === 'request'}
