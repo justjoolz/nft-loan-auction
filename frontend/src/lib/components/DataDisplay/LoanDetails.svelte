@@ -1,12 +1,14 @@
 <script lang="ts">
-	export let loan: any = {};
+	import type { LoanAuction } from '../../flow/stores';
+
+	export let loan: LoanAuction;
 </script>
 
 <div class="flexColumnCenter w-full font-bold">
-	<p class="text-left w-1/2">Loan amount: ${loan.loanAmount}</p>
-	<p class="text-left w-1/2">Interest: {loan.loanInterest}%</p>
-	<p class="text-left w-1/2">Loan duration: {loan.loanDuration} Days</p>
-	<p class="text-left w-1/2">Borrowed amount: ${loan.borrowedAmount}</p>
-	<p class="text-left w-1/2">Loan Start Date: {loan.loanDate}</p>
-	<p class="text-left w-1/2">Outstanding Balance: ${loan.outstandingAmount}</p>
+	<p class="text-left w-1/2">Loan debt: ${loan.debt}</p>
+	<p class="text-left w-1/2">Fees incurred {loan.feesIncurred}%</p>
+	<p class="text-left w-1/2">Duration: {loan.duration}%</p>
+	<p class="text-left w-1/2">Borrowed amount: ${loan.debt}</p>
+	<p class="text-left w-1/2">Loan Start Date: {loan.startTime}</p>
+	<p class="text-left w-1/2">Yield: ${loan.yield}</p>
 </div>
