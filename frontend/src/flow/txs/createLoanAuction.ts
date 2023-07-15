@@ -1,7 +1,8 @@
-export const CREATE_LOAN_AUCTION = (contractName: string, importAddress: string) => `import FungibleToken from "../../contracts/lib/FungibleToken.cdc"
-import NonFungibleToken from "../../contracts/lib/NonFungibleToken.cdc"
-import ${contractName} from ${importAddress} // "../../contracts/Basket.cdc"
-import NFTLoanAuction from "../../contracts/NFTLoanAuction.cdc"
+export const CREATE_LOAN_AUCTION = (contractName: string, importAddress: string) => `
+import FungibleToken from 0xFungibleToken
+import NonFungibleToken from 0xNonFungibleToken
+import ${contractName} from ${importAddress}
+import NFTLoanAuction from 0xNFTLoanAuction
 
 //transaction( nftID: UInt64, collectionStoragePath: StoragePath, collectionPublicPath: PublicPath, duration: UFix64, yield: UFix64, minimumLoanValueRequested: UFix64, rollingContract: Bool) {
 
