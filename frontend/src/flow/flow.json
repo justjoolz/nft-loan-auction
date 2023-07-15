@@ -56,18 +56,26 @@
         "ExampleNFT": "./contracts/lib/ExampleNFT.cdc",
         "VaultNFT": "./contracts/VaultNFT.cdc",
         "Basket": {
+            "source": "./contracts/Basket.cdc",
+            "aliases": {
+                "testnet": "0xca909b58fecc185a",
+                "mainnet": "0x15108c416204569e"
+            }
+        },
+        "NFTLoanAuction": {
             "source": "./contracts/NFTLoanAuction.cdc",
             "aliases": {
-                "testnet": "0xca909b58fecc185a"
+                "testnet": "0x921cd899edb601be",
+                "mainnet": "0x41e57fc3739f6180"
             }
         }
     },
     "accounts": {
-        "testnet-admin=account": {
-            "address": "0xca909b58fecc185a"
+        "testnet-admin-account": {
+            "address": "0x921cd899edb601be"
         },
         "mainnet-admin": {
-            "address": "0xf8d6e0586b0a20c7"
+            "address": "0x41e57fc3739f6180"
         }
     },
     "deployments": {
