@@ -23,14 +23,15 @@
 	on:click={() => modalComponentImage(loan)}
 >
 	<div class="flex flex-col gap-2">
-		{#if loan.items[0].nfts.length > 0}
+		{#if loan?.nftType}
+			<!-- {#if loan.items[0].nfts.length > 0} -->
 			<div class="flexRowCenter pt-2">
 				<p class="font-bold">Non Fungible Tokens</p>
 			</div>
 			<div class="gridDisplay2 gap-2">
-				{#each loan.items[0].nfts as nft}
-					<NftCard {nft} />
-				{/each}
+				<!-- {#each loan.items[0].nfts as nft} -->
+				<NftCard nft={loan.nftType} />
+				<!-- {/each} -->
 			</div>
 		{/if}
 	</div>

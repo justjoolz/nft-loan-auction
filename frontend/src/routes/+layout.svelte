@@ -22,6 +22,19 @@
 	import CreateLoanModal from '$lib/components/Modals/CreateLoanModal.svelte';
 	import ActiveLoanModal from '$lib/components/Modals/ActiveLoanModal.svelte';
 	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';	
+	import { authenticate } from '@onflow/fcl';
+	import { onDestroy, onMount } from 'svelte';
+	import type { CurrentUser } from '@onflow/fcl/types/current-user';
+	import { handleUserChange } from '../lib/flow/actions';
+	import { setupFCL } from '../lib/flow/config';
+	// import { setupFCL } from '$lib/flow/config.client'; // in basket lives here
+
+	import { user, transactionStatus } from '../lib/flow/stores';
+	import * as fcl from '@onflow/fcl';
+
+	const t: ToastSettings = {
+		message: 'menu opened'
+	};
 
 	function drawerOpen() {
 		drawerStore.open();
@@ -41,6 +54,23 @@
 			ref: LoanRequestModal
 		}
 	};
+
+	let txUnsub: Function;
+	let userUnsub: Function;
+
+	onMount(() => {
+		setupFCL();
+		fcl.currentUser.subscribe((data: CurrentUser) => user.set(data));
+		userUnsub = user.subscribe(handleUserChange);
+		txUnsub = transactionStatus.subscribe((value) => {
+			console.log('transactionStatus changed', { value });
+		});
+	});
+
+	onDestroy(() => {
+		if (userUnsub) userUnsub();
+		if (txUnsub) txUnsub();
+	});
 </script>
 
 <Toast position="br" />
@@ -66,7 +96,7 @@
 						</svg>
 					</span>
 				</button>
-				<div class="flex w-[234px] justify-end">
+				<div class="flex w-[234px] justify-end" on:click={authenticate}>
 					<Avatar initials="JD" background="bg-primary-500" width="w-10" class="hidden md:block" />
 				</div></svelte:fragment
 			>
