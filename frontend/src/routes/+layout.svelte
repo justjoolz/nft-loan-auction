@@ -23,9 +23,11 @@
 	import { authenticate } from '@onflow/fcl';
 	import { onDestroy, onMount } from 'svelte';
 	import type { CurrentUser } from '@onflow/fcl/types/current-user';
-	import { handleUserChange } from '../flow/actions';
-	import { setupFCL } from '../flow/config';
-	import { user, transactionStatus } from '../flow/stores';
+	import { handleUserChange } from '../lib/flow/actions';
+	import { setupFCL } from '../lib/flow/config';
+	// import { setupFCL } from '$lib/flow/config.client'; // in basket lives here
+
+	import { user, transactionStatus } from '../lib/flow/stores';
 	import * as fcl from '@onflow/fcl';
 
 	const t: ToastSettings = {

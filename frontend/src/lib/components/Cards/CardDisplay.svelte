@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import LoanCard from './LoanCard.svelte';
+	import type { LoanAuction } from '../../flow/stores';
 
-	export let loans: any;
+	export let loans: LoanAuction[] = [];
 	export let title: string;
 </script>
 

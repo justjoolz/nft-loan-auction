@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { createLoanAuction } from '../../flow/actions';
+	import { createLoanAuction } from '../flow/actions';
 
 	function modalComponentCreateLoan(): void {
 		const modal: ModalSettings = {
