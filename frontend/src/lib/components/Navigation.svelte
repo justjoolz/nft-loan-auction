@@ -1,14 +1,22 @@
-<script>
-	import { drawerStore, toastStore } from '@skeletonlabs/skeleton';
+<script lang="ts">
+	import { drawerStore } from '@skeletonlabs/skeleton';
+	import { onMount } from 'svelte';
+	let slug = '';
 
-	const t = {
-		message: 'menu closed',
-		background: 'variant-filled-success'
-	};
+	onMount(() => {
+		updateSlug();
+		window.addEventListener('popstate', updateSlug);
+	});
+	function updateSlug() {
+		const pathParts = window.location.pathname.split('/');
+		const slugIndex = 2; // Adjust this value based on the position of the "slug" in the URL
+
+		// Update the slug variable
+		slug = pathParts[slugIndex];
+	}
 
 	function drawerClose() {
 		drawerStore.close();
-		toastStore.trigger(t);
 	}
 </script>
 

@@ -4,8 +4,10 @@
 	import FtCard from './FTCard.svelte';
 	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
+	import CardDetails from '../DataDisplay/CardDetails.svelte';
 
 	export let loan: any = {};
+
 	function modalComponentImage(loan: any): void {
 		const modal: ModalSettings = {
 			type: 'component',
@@ -35,7 +37,7 @@
 			</div>
 		{/if}
 
-		<!-- {#if loan.items[1].fts.length > 0}
+		{#if loan.items[1].fts.length > 0}
 			<div class="flexRowCenter pt-2">
 				<p class="font-bold">Fungible Tokens</p>
 			</div>
@@ -44,14 +46,12 @@
 					<FtCard {ft} />
 				{/each}
 			</div>
-		{/if} -->
-	</div>
-
-	<div class="flexColumnCenter pt-3">
-		{#if loan.offer === null}
-			<LoanDetails {loan} />
+		{/if}
+		{#if loan.type === 'active'}
+			<CardDetails {loan} type="active" />
 		{:else if loan.type === 'request'}
-			<RequestDetails {loan} />
+			<CardDetails {loan} type="request" />
 		{/if}
 	</div>
-</div>
+ </div> 
+

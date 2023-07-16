@@ -4,11 +4,15 @@
 	export let loan: LoanAuction;
 </script>
 
-<div class="flexColumnCenter w-full font-bold">
-	<p class="text-left w-1/2">Loan debt: ${loan.debt}</p>
-	<p class="text-left w-1/2">Fees incurred {loan.feesIncurred}%</p>
-	<p class="text-left w-1/2">Duration: {loan.duration}%</p>
-	<p class="text-left w-1/2">Borrowed amount: ${loan.debt}</p>
-	<p class="text-left w-1/2">Loan Start Date: {loan.startTime}</p>
-	<p class="text-left w-1/2">Yield: ${loan.yield}</p>
+<div class="flexRowCenter w-full gap-8 text-lg">
+	<div>
+		<p class="text-left">Loan debt: <b>${loan.debt}</b></p>
+		<p class="text-left">Fees incurred {loan.feesIncurred}%</p>
+		<p class="text-left">Duration: {loan.duration}Days</p>
+	</div>
+	<div>
+		<p class="text-left">Borrowed amount: ${loan.debt}</p>
+		<p class="text-left">Loan Start Date: {loan.startTime}</p>
+		<p class="text-left">Yield: ${loan.yield}</p>
+	</div>
 </div>

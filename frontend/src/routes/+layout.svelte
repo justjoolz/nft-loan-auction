@@ -33,10 +33,27 @@
 	const t: ToastSettings = {
 		message: 'menu opened'
 	};
+	import ActiveLoanModal from '$lib/components/Modals/ActiveLoanModal.svelte';
+	import { logIn, unauthenticate } from '$lib/flow/actions';
+
+	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';
 
 	function drawerOpen() {
 		drawerStore.open();
 		toastStore.trigger(t);
+	}
+	let slug = '';
+
+	onMount(() => {
+		updateSlug();
+		window.addEventListener('popstate', updateSlug);
+	});
+	function updateSlug() {
+		const pathParts = window.location.pathname.split('/');
+		const slugIndex = 2; // Adjust this value based on the position of the "slug" in the URL
+
+		// Update the slug variable
+		slug = pathParts[slugIndex];
 	}
 
 	const modalComponentRegistry: Record<string, ModalComponent> = {
@@ -68,7 +85,7 @@
 </script>
 
 <Toast position="br" />
-<Modal components={modalComponentRegistry} />
+<Modal position="items-start" padding="p-8" components={modalComponentRegistry} />
 <Drawer>
 	<Navigation />
 </Drawer>
@@ -90,10 +107,23 @@
 						</svg>
 					</span>
 				</button>
-				<div class="flex w-[234px] justify-end" on:click={authenticate}>
-					<Avatar initials="JD" background="bg-primary-500" width="w-10" class="hidden md:block" />
-				</div></svelte:fragment
-			>
+				{#if $user.loggedIn}
+					<a href="/profile">
+						<button class="hidden md:block btn text-lg hover:variant-ringed-primary"
+							>{$user.addr}</button
+						></a
+					><button
+						class="hidden md:block text-lg btn hover:variant-ringed-primary"
+						on:click={unauthenticate}>Log Out</button
+					>
+				{:else}
+					<button
+						class="hidden md:block btn text-lg hover:variant-ringed-primary"
+						on:click={logIn}
+						>Log In
+					</button>
+				{/if}
+			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 
