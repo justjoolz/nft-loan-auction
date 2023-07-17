@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let loan: any = {};
 	export let type: string = 'active' || 'request';
+	let amountToBorrow: number = 0;
 </script>
 
 <div class="flexRowCenter w-full gap-8 text-lg">

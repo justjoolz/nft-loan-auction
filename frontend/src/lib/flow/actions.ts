@@ -266,6 +266,15 @@ export const borrowFunds = async (auctionID: string, amount: string) => {
     try {
         const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64), arg(amount, t.UFix64)] })
         console.log(tx)
+        fcl.tx(tx).subscribe(res => {
+            transactionStatus.set(res.status)
+            console.log({ res })
+            if (res.status === 4) {
+                getAllLoanAuctionMeta()
+                getLoanAuctionMeta(auctionID.toString())
+            }
+        })
+
     } catch (e) {
         console.log(e);
     }
