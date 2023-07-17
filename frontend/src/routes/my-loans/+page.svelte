@@ -6,7 +6,7 @@
 	let tabSet: number = 0;
 
 	let loans: LoanAuction[] = [];
-	$: loans = $loanAuctions.filter((loan) => loan.ownersAddress === $user.addr);
+	$: loans = $loanAuctions.filter((loan) => loan.ownersAddress === $user?.addr);
 </script>
 
 <div class="flexColumnCenter w-full px-10 py-20">
@@ -29,6 +29,7 @@
 			<Tab bind:group={tabSet} name="tab3" value={2}><span class="px-16">Requests</span></Tab>
 		</TabGroup>
 	</div>
+
 	<div class="gridDisplay gap-6 pt-10">
 		{#if tabSet === 0}
 			{#each loans as loan}

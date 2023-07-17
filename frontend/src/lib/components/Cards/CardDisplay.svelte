@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import LoanCard from './LoanCard.svelte';
 	import type { LoanAuction } from '../../flow/stores';
 
 	export let loans: LoanAuction[] = [];
 	export let title: string;
 	let slug = title.toLowerCase().replace(' ', '-');
-	let firstSixLoans = loans.slice(0, 6);
+
+	let firstSixLoans: LoanAuction[] = [];
+	$: firstSixLoans = loans.slice(0, 6);
 </script>
 
 <div class="flexColumnCenter w-full p-10 pt-20">

@@ -14,6 +14,7 @@ import { setupFCL } from "./config";
 import { browser } from "$app/environment";
 import { CREATE_LOAN_AUCTION } from "./txs/createLoanAuction";
 import { GET_OFFERS_FOR_ACOUNT } from "./scripts/getOffersForAccount";
+import { GET_LOANS_FOR_ACCOUNT } from "./scripts/getLoansForAccount";
 
 export const ssr = false;
 
@@ -128,16 +129,11 @@ export const getLoansForAccount = async (addr: String) => {
     transactionStatus.set(`Fetching your loans... ${addr}`);
     try {
         let result = await fcl.query({
-            cadence: GET_LOANS_FOR_ACOUNT,
+            cadence: GET_LOANS_FOR_ACCOUNT,
             args: (arg, t) => [arg(addr, t.Address)]
         })
         console.log({ result })
-        fcl.tx(result).subscribe(res => {
-            transactionStatus.set(res.status)
-            loansForAccount.set(res)
-            console.log({ res })
-        })
-
+        loansForAccount.set(result)
     } catch (e) {
         console.log(e);
     }

@@ -14,13 +14,7 @@
 	let interest: number;
 	let borrowAmount: number;
 	let payBackAmount: number;
-	let existingOffers: any[] = [
-		{
-			amount: 100,
-			interest: 10,
-			duration: 10
-		}
-	];
+
 	let isOwned: boolean = true;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
@@ -134,20 +128,23 @@
 						</div>
 					</div>
 				</div>
-				{#if existingOffers.length > 0}
-					<div class="flexRowCenter w-full gap-8 mt-8">
-						<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
-							<div class="flexRowCenter pt-2">
-								<p class="font-bold">Offers for this loan request</p>
-							</div>
-							<div class="gridDisplay gap-2 pb-4">
-								{#each existingOffers as offer}
-									<OffersCard {offer} />
-								{/each}
-							</div>
+
+				<div class="flexRowCenter w-full gap-8 mt-8">
+					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
+						<div class="flexRowCenter pt-2">
+							<p class="font-bold">Offers for this loan request</p>
+						</div>
+						<div class="gridDisplay gap-2 pb-4">
+							<OffersCard
+								offer={{
+									amount: loan.offer,
+									interest: loan.yield * 100,
+									duration: loan.duration / (60 * 60 * 24)
+								}}
+							/>
 						</div>
 					</div>
-				{/if}
+				</div>
 			{:else}
 				<div class="flex w-full gap-8">
 					<div class="flex flex-col w-full">
@@ -195,7 +192,9 @@
 		</div>
 
 		<div>
-			{#if !loan.startTime}
+			{#if loan.startTime}
+				Ends in: {loan.startTime + loan.duration} seconds
+			{:else}
 				<button on:click={handleCancelLoanAuctionClick}> Cancel the loan! </button>
 			{/if}
 		</div>
