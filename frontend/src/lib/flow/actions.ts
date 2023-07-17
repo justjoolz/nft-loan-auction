@@ -1,6 +1,6 @@
 import * as fcl from "@onflow/fcl";
 import "./config";
-import { user, transactionStatus, usersNFTs, usersFTs, ftTokens, usersBasketIds, selectedBasketMeta, loanAuctions, basket, loansForAccount, type LoanAuction } from './stores';
+import { user, transactionStatus, usersNFTs, usersFTs, ftTokens, usersBasketIds, selectedBasketMeta, loanAuctions, basket, loansForAccount, type LoanAuction, flowTokenBalance } from './stores';
 import { GET_ALL_NFTS_IN_ACCOUNT_SCRIPT } from "./scripts";
 import type { CurrentUser } from "@onflow/fcl/types/current-user";
 import { CREATE_BASKET } from "./txs/createBasket";
@@ -572,12 +572,13 @@ export async function fetchTokenBalances(tokens: TokenInfo[]) {
 				balance
 			});
 		}
+
 	});
 
 	await Promise.all(promises);
 
 	console.log({ balances });
-	return usersFTs.set(balances);
+	usersFTs.set(balances);
 }
 
 export const createEmptyBasket = async () => {
@@ -609,21 +610,21 @@ export const getFTBalance = async (addr: String, ft: TokenInfo) => {
 	transactionStatus.set(`Fetching your FTs... ${ft.name}`);
 
 	const code = `
-import FungibleToken from 0xFungibleToken
-import ${ft.contractName} from ${ft.address}
+		import FungibleToken from 0xFungibleToken
+		import ${ft.contractName} from ${ft.address}
 
-pub fun main(address: Address): UFix64? {
-    let account = getAccount(address)
+		pub fun main(address: Address): UFix64? {
+			let account = getAccount(address)
 
-    let vaultRef = account.getCapability(${ft.path.balance})
-      .borrow<&{FungibleToken.Balance}>()
-      // ?? panic("Could not borrow Balance reference to the ${ft.contractName} Vault")
+			let vaultRef = account.getCapability(${ft.path.balance})
+			.borrow<&{FungibleToken.Balance}>()
+			// ?? panic("Could not borrow Balance reference to the ${ft.contractName} Vault")
 
-    if vaultRef == nil { return nil }
+			if vaultRef == nil { return nil }
 
-    return vaultRef?.balance!
-  }
-`;
+			return vaultRef?.balance!
+		}
+		`;
 	try {
 		const balance = await fcl.query({
 			cadence: code,
@@ -930,6 +931,8 @@ async function fetchUsersData() {
 
 	await getFTs().then(async (ftTokens) => {
 		await fetchTokenBalances(ftTokens);
+		const flowBalance = get(usersFTs).find((token) => token.token === 'FLOW')?.balance ?? 0;
+		flowTokenBalance.set(flowBalance)
 	});
 
 }

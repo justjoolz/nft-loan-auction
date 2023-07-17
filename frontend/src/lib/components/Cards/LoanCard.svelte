@@ -47,11 +47,11 @@
 		<div>
 			{#if loan.offer}
 				Current Offer: ${loan?.offer ?? '--'} FLOW
-				<!-- {#if isOwner}
+				{#if isOwner}
 					<p>Borrow Funds</p>
 				{:else}
 					<p class="font-bold">You are not the owner of this loan</p>
-				{/if} -->
+				{/if}
 			{/if}
 		</div>
 

@@ -25,7 +25,7 @@
 	import { handleUserChange } from '../lib/flow/actions';
 	import { setupFCL } from '../lib/flow/config';
 
-	import { user, transactionStatus, usersFTs } from '../lib/flow/stores';
+	import { user, transactionStatus, usersFTs, flowTokenBalance } from '../lib/flow/stores';
 	import * as fcl from '@onflow/fcl';
 
 	const t: ToastSettings = {
@@ -68,16 +68,6 @@
 	};
 
 	let tokens = $usersFTs;
-	let flowToken: any;
-	$: {
-		if (tokens.length) {
-			console.log({ tokens });
-			flowToken = tokens?.filter((token) => token.token === 'FLOW')[0] ?? { balance: '?' };
-			console.log(flowToken);
-		}
-	}
-	// $: flowBalance = $usersFTs.filter((token) => token.token === 'FLOW')[0].balance ?? 0;
-
 	let txUnsub: Function;
 	let userUnsub: Function;
 
@@ -130,7 +120,7 @@
 				</button>
 				{#if $user.loggedIn}
 					<div>
-						{flowToken?.balance} FLOW
+						{$flowTokenBalance} FLOW
 					</div>
 					<a href="/my-loans">
 						<button class="hidden md:block btn text-lg hover:variant-ringed-primary"

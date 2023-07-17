@@ -118,7 +118,7 @@
 							{#if loan.offer != null}
 								<OffersCard
 									offer={{
-										amount: '',
+										amount: loan.offer,
 										interest: loan.yield * 100,
 										duration: loan.duration / (60 * 60 * 24)
 									}}
