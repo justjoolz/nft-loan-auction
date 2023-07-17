@@ -4,6 +4,7 @@
 	import FtCard from './FTCard.svelte';
 	import { currentUser } from '@onflow/fcl';
 	import CardDetails from '../DataDisplay/CardDetails.svelte';
+	import { getAllLoanAuctionMeta } from '$lib/flow/actions';
 
 	export let loan: any = {};
 
@@ -13,6 +14,7 @@
 			component: loan.debt > 0 ? 'active-loan' : 'loan-request',
 			meta: loan
 		};
+		getAllLoanAuctionMeta();
 		modalStore.trigger(modal);
 	}
 	// console.log(loan);

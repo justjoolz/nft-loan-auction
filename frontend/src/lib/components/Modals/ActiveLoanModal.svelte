@@ -6,7 +6,13 @@
 	import NftCard from '../Cards/NFTCard.svelte';
 	import FtCard from '../Cards/FTCard.svelte';
 	import OffersCard from '../Cards/OffersCard.svelte';
-	import { borrowFunds, cancelAuction, repayFunds } from '$lib/flow/actions';
+	import {
+		borrowFunds,
+		cancelAuction,
+		getAllLoanAuctionMeta,
+		lendFunds,
+		repayFunds
+	} from '$lib/flow/actions';
 	import { user } from '$lib/flow/stores';
 	import formatDate from '$lib/utils/formatDate';
 
@@ -17,11 +23,12 @@
 	let borrowAmount: number;
 	let payBackAmount: number;
 
-	let isOwned = false;
-	$: isOwned = $user.addr === loan.owner;
+	let isUserOwner = false;
+	$: isUserOwner = $user.addr === loan.ownersAddress;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
 	const onComplete = () => {
+		getAllLoanAuctionMeta();
 		parent.onClose();
 	};
 
@@ -52,6 +59,29 @@
 		console.log('canceling loan auction yeah!');
 		cancelAuction(loan.id, onComplete);
 	};
+
+	const handleOfferFundsClick = () => {
+		if (amount <= 0 || amount <= loan.offer) {
+			alert('Please enter a valid amount to lend!');
+			return;
+		}
+		const ftContractName = 'FlowToken';
+		const ftContractAddress = '0x7e60df042a9c0868';
+		const ftVaultStoragePath = '/storage/flowTokenVault';
+		const collectionPublicPath = '/public/' + loan.nftReceiverCap.path.value.identifier; // $selectedCollateralNFT.publicPath.identifier; // '/public/BasketCollection';
+		const ftReceiverPublicPath = '/public/flowTokenReceiver';
+
+		lendFunds(
+			loan.id,
+			amount,
+			ftContractName,
+			ftContractAddress,
+			ftVaultStoragePath,
+			collectionPublicPath,
+			ftReceiverPublicPath,
+			onComplete
+		);
+	};
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -72,13 +102,12 @@
 				<NftCard nft={loan.nftType} />
 			</div>
 		</div>
-		<!-- {/if} -->
 
 		<div class="flexColumnCenter gap-2">			
 			<div class="py-6">				
 					<LoanDetails {loan} />				
 			</div>
-			{#if isOwned}
+			{#if isUserOwner}
 				<div class="flex w-full gap-8 pb-10">
 					<div class="flex flex-col w-full">
 						<label for="borrow" class="font-bold pb-2">Borrow USDC</label>
@@ -158,9 +187,11 @@
 						/>
 					</div> -->
 				</div>
-				{#if !isOwned}
+				{#if !isUserOwner}
 					<div class="pt-4">
-						<button class="btn variant-filled-primary font-bold">Make An Offer</button>
+						<button on:click={handleOfferFundsClick} class="btn variant-filled-primary font-bold"
+							>Make An Offer</button
+						>
 					</div>
 				{/if}
 			{/if}

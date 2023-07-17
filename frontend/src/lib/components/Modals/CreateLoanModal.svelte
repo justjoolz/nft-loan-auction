@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { modalStore } from '@skeletonlabs/skeleton';
 	import { selectedCollateralNFT } from '$lib/flow/stores';
-	import { createLoanAuction } from '$lib/flow/actions';
+	import { createLoanAuction, getAllLoanAuctionMeta } from '$lib/flow/actions';
 	import ContentDisplay from '../ContentDisplay.svelte';
 
 	export let parent: any;
@@ -27,6 +27,7 @@
 		const ftReceiverPublicPath = '/public/flowTokenReceiver'; // HARDCODED TO USE FLOW TOKEN
 
 		const onComplete = () => {
+			getAllLoanAuctionMeta();
 			parent.onClose();
 		};
 

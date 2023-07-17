@@ -15,11 +15,12 @@
 
 	let amount: number = loan.offer * 1.1; // input
 
-	let isOwned = false;
-	$: isOwned = loan.ownersAddress === $user?.addr;
+	let isUserOwner = false;
+	$: isUserOwner = loan.ownersAddress === $user?.addr;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
 	const onComplete = () => {
+		getAllLoanAuctionMeta();
 		parent.onClose();
 	};
 
@@ -31,6 +32,8 @@
 	const ftReceiverPublicPath = '/public/flowTokenReceiver';
 
 	let nft: any;
+	let borrowAmount = 0;
+
 	$: console.log(loan);
 	$: nft = loan.nftType;
 	$: console.log({ amount, loan });
@@ -60,8 +63,17 @@
 
 	const handleCancelLoanAuctionClick = () => {
 		cancelAuction(loan.id, onComplete);
-	};	
+	};
 	console.log({ loan });
+
+	const handleBorrowFundsClick = () => {
+		if (borrowAmount > loan.offer || borrowAmount <= 0) {
+			alert('Please enter a valid amount to borrow!');
+			return;
+		}
+		borrowFunds(loan.id, borrowAmount.toString(), onComplete);
+	};
+
 	onMount(() => {
 		getAllLoanAuctionMeta();
 	});
@@ -103,10 +115,39 @@
 			<div class="py-6">
 				<RequestDetails {loan} />
 			</div>
-			<div class="flexRowCenter w-full gap-8">
-				<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
-					<div class="flexRowCenter pt-2">
-						<p class="font-bold">Offer for this loan request</p>
+			{#if isUserOwner}
+				<div class="flexRowCenter w-full gap-8">
+					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
+						<div class="flexRowCenter pt-2">
+							<p class="font-bold">Offers for your loan request</p>
+						</div>
+						<div class="gridDisplay gap-2 pb-4">
+							{#if loan.offer != null}
+								<OffersCard
+									offer={{
+										amount: loan.offer,
+										interest: loan.yield * 100,
+										duration: loan.duration / (60 * 60 * 24)
+									}}
+								/>
+								<input
+									type="number"
+									id="loanAmount"
+									class="input w-full"
+									placeholder="Amount"
+									bind:value={borrowAmount}
+									tabindex="0"
+								/>
+								<button
+									class="btn variant-filled-primary font-bold"
+									on:click={handleBorrowFundsClick}
+								>
+									Borrow Funds
+								</button>
+							{:else}
+								<p>Your loan currently has no offers!</p>
+							{/if}
+						</div>
 					</div>
 					{#if loan.offer === null}
 						<p class="text-center w-full pt-4 pb-2">No offers yet</p>
@@ -122,8 +163,8 @@
 						</div>
 					{/if}
 				</div>
-			</div>
-			{#if isOwned !== true}
+			{/if}
+			{#if isUserOwner !== true}
 				<div class="flex w-full gap-8">
 					<div class="flex flex-col w-full">
 						<p>Current Offer: {loan?.offer ?? 'None'}</p>

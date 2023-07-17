@@ -437,7 +437,7 @@ export const repayFunds = async (
 	try {
 		const tx = await fcl.mutate({
 			cadence,
-			args: (arg, t) => [arg(auctionID.toString(), t.UInt64), arg(amount, t.UFix64)]
+			args: (arg, t) => [arg(auctionID.toString(), t.UInt64), arg(toUFix64(amount), t.UFix64)]
 		});
 		console.log(tx);
 		fcl.tx(tx).subscribe((res) => {
