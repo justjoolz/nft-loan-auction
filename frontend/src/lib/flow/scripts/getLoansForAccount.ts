@@ -1,4 +1,4 @@
-const GET_LOANS_FOR_ACOUNT = `
+export const GET_LOANS_FOR_ACCOUNT = `
 import "NonFungibleToken" 
 import "NFTLoanAuction"
 

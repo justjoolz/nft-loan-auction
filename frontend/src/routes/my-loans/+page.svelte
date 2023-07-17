@@ -3,6 +3,7 @@
 	import LoanCard from '$lib/components/Cards/LoanCard.svelte';
 	import { TabGroup, Tab } from '@skeletonlabs/skeleton';
 	import { loanAuctions, type LoanAuction, user } from '$lib/flow/stores';
+
 	let tabSet: number = 0;
 
 	let loans: LoanAuction[] = [];
