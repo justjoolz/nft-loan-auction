@@ -6,7 +6,13 @@
 	import NftCard from '../Cards/NFTCard.svelte';
 	import FtCard from '../Cards/FTCard.svelte';
 	import OffersCard from '../Cards/OffersCard.svelte';
-	import { borrowFunds, cancelAuction, repayFunds } from '$lib/flow/actions';
+	import {
+		borrowFunds,
+		cancelAuction,
+		getAllLoanAuctionMeta,
+		lendFunds,
+		repayFunds
+	} from '$lib/flow/actions';
 	import { user } from '$lib/flow/stores';
 
 	export let parent: any;
@@ -17,10 +23,11 @@
 	let payBackAmount: number;
 
 	let isUserOwner = false;
-	$: isUserOwner = $user.addr === loan.owner;
+	$: isUserOwner = $user.addr === loan.ownersAddress;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
 	const onComplete = () => {
+		getAllLoanAuctionMeta();
 		parent.onClose();
 	};
 
@@ -51,6 +58,29 @@
 		console.log('canceling loan auction yeah!');
 		cancelAuction(loan.id, onComplete);
 	};
+
+	const handleOfferFundsClick = () => {
+		if (amount <= 0 || amount <= loan.offer) {
+			alert('Please enter a valid amount to lend!');
+			return;
+		}
+		const ftContractName = 'FlowToken';
+		const ftContractAddress = '0x7e60df042a9c0868';
+		const ftVaultStoragePath = '/storage/flowTokenVault';
+		const collectionPublicPath = '/public/' + loan.nftReceiverCap.path.value.identifier; // $selectedCollateralNFT.publicPath.identifier; // '/public/BasketCollection';
+		const ftReceiverPublicPath = '/public/flowTokenReceiver';
+
+		lendFunds(
+			loan.id,
+			amount,
+			ftContractName,
+			ftContractAddress,
+			ftVaultStoragePath,
+			collectionPublicPath,
+			ftReceiverPublicPath,
+			onComplete
+		);
+	};
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -62,32 +92,16 @@
 		<div class="flexRowCenter relative w-full mb-2">
 			<h2 class="h2 font-bold border-b-2 border-primary-800">Active Loan Details</h2>
 		</div>
-		<!-- {#if loan.items[0].nfts.length > 0} -->
 		<div class="flex flex-col gap-2 bg-tertiary-700 p-6 pt-3 rounded-md">
 			<div class="flexRowCenter">
 				<p class="font-bold">Non Fungible Tokens</p>
 			</div>
 			<div class="gridDisplay gap-2">
-				<!-- {#each loan.items[0].nfts as nft} -->
-				<!-- <NftCard {loan} /> -->
-				<!-- {/each} -->
+				<NftCard nft={loan?.nftType} />
 			</div>
 		</div>
-		<!-- {/if} -->
 
 		<div class="flexColumnCenter gap-2">
-			<!-- {#if loan.items[1].fts.length > 0} -->
-			<div class="w-full bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
-				<div class="flexRowCenter pt-2">
-					<p class="font-bold">Fungible Tokens</p>
-				</div>
-				<div class="gridDisplay gap-2 pb-4">
-					<!-- {#each loan.items[1].fts as ft} -->
-					<!-- <FtCard {ft} /> -->
-					<!-- {/each} -->
-				</div>
-			</div>
-			<!-- {/if} -->
 			<div class="py-6">
 				{#if loan.type === 'active'}
 					<LoanDetails {loan} />
@@ -177,7 +191,9 @@
 				</div>
 				{#if !isUserOwner}
 					<div class="pt-4">
-						<button class="btn variant-filled-primary font-bold">Make An Offer</button>
+						<button on:click={handleOfferFundsClick} class="btn variant-filled-primary font-bold"
+							>Make An Offer</button
+						>
 					</div>
 				{/if}
 			{/if}

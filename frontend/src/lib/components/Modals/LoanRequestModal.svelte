@@ -21,6 +21,7 @@
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
 	const onComplete = () => {
+		getAllLoanAuctionMeta();
 		parent.onClose();
 	};
 
@@ -32,6 +33,8 @@
 	const ftReceiverPublicPath = '/public/flowTokenReceiver';
 
 	let nft: any;
+	let borrowAmount = 0;
+
 	$: console.log(loan);
 	$: nft = loan.nftType;
 	$: console.log({ amount, loan });
@@ -61,6 +64,14 @@
 
 	const handleCancelLoanAuctionClick = () => {
 		cancelAuction(loan.id, onComplete);
+	};
+
+	const handleBorrowFundsClick = () => {
+		if (borrowAmount > loan.offer || borrowAmount <= 0) {
+			alert('Please enter a valid amount to borrow!');
+			return;
+		}
+		borrowFunds(loan.id, borrowAmount.toString(), onComplete);
 	};
 
 	onMount(() => {
@@ -123,6 +134,20 @@
 										duration: loan.duration / (60 * 60 * 24)
 									}}
 								/>
+								<input
+									type="number"
+									id="loanAmount"
+									class="input w-full"
+									placeholder="Amount"
+									bind:value={borrowAmount}
+									tabindex="0"
+								/>
+								<button
+									class="btn variant-filled-primary font-bold"
+									on:click={handleBorrowFundsClick}
+								>
+									Borrow Funds
+								</button>
 							{:else}
 								<p>Your loan currently has no offers!</p>
 							{/if}
