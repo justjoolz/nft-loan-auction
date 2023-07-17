@@ -19,10 +19,13 @@
 	function drawerClose() {
 		drawerStore.close();
 	}
+	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 </script>
 
-<nav class="list-nav">
-	<ul class="flex w-full justify-center items-end gap-x-2">
+<button class="block md:hidden btn-icon variant-filled {cButton}" on:click={drawerClose}>X</button>
+
+<nav class="list-nav w-full">
+	<ul class="flex md:flex-row flex-col w-full justify-center md:items-end lg:gap-x-2">
 		<li><a href="/active-loans" on:click={drawerClose}>Active Loans</a></li>
 		<li><a href="/loan-requests" on:click={drawerClose}>Loan Requests</a></li>
 		{#if $user.loggedIn}

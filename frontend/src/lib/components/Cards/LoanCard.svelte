@@ -47,7 +47,7 @@
 			<div class="flex justify-between w-full">
 				<div class="text-lg w-1/2">
 					<p>Current Offer:</p>
-					<p><b>{loan.offer}</b> FLOW</p>
+					<p>{loan.offer} FLOW</p>
 				</div>
 				<CardDetails {loan} />
 			</div>

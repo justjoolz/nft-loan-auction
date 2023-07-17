@@ -28,11 +28,11 @@
 			border=""
 			class="bg-surface-100-800-token w-full"
 		>
-			<Tab bind:group={tabSet} name="tab1" value={0}>
-				<span class="px-16">Active Loans</span>
+			<Tab bind:group={tabSet} name="tab1" padding="p-[6px]" value={0}>
+				<span class="text-xs sm:text-base lg:px-16">Active Loans</span>
 			</Tab>
-			<Tab bind:group={tabSet} name="tab2" value={1}><span class="px-16">Offers</span></Tab>
-			<Tab bind:group={tabSet} name="tab3" value={2}><span class="px-16">Requests</span></Tab>
+			<Tab bind:group={tabSet} name="tab2" padding="p-[6px]" value={1}><span class="text-xs sm:text-base lg:px-16">Offers</span></Tab>
+			<Tab bind:group={tabSet} name="tab3" padding="p-[6px]" value={2}><span class="text-xs sm:text-base lg:px-16">Requests</span></Tab>
 		</TabGroup>
 	</div>
 

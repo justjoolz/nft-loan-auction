@@ -10,7 +10,7 @@
 	$: firstSixLoans = loans.slice(0, 6);
 </script>
 
-<div class="flexColumnCenter w-full p-10 pt-20">
+<div class="flexColumnCenter w-full p-4 md:p-6 lg:p-10 !pt-20">
 	<div class="flexRowCenter relative w-full">
 		<h2 class="h2 font-bold border-b-2 border-primary-800">{title}</h2>
 		{#if loans.length > 6}

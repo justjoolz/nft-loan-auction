@@ -17,7 +17,7 @@
 			<div class="text-left">
 				<p>Current Borrowed Debt:</p>
 				<p>
-					<b>{`${loan.debt}`}</b>
+					{`${loan.debt}`}
 					({utilizationPercentage}%)
 				</p>
 			</div>
