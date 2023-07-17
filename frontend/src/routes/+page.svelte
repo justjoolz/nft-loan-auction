@@ -1,7 +1,4 @@
-<script lang="ts">
-	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { loans } from '$lib/utils/loanData';
-	import { requests } from '$lib/utils/requestData';
+<script lang="ts">	
 	import Hero from '$lib/components/Hero.svelte';
 	import CardDisplay from '$lib/components/Cards/CardDisplay.svelte';
 	import { getAllLoanAuctionMeta } from '../lib/flow/actions';
