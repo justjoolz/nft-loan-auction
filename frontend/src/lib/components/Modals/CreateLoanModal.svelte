@@ -10,7 +10,7 @@
 
 	let nftId: number = 0,
 		duration: number = 1,
-		_yield: number = 0.1,
+		_yield: number = 10,
 		minimumLoanValueRequested: number = 0,
 		rollingContract: boolean = true;
 
@@ -29,7 +29,7 @@
 		createLoanAuction(
 			parseInt($selectedCollateralNFT.id),
 			duration * 60 * 60 * 24,
-			_yield,
+			_yield / 100,
 			minimumLoanValueRequested,
 			rollingContract,
 			contractName,
@@ -63,7 +63,7 @@
 				/>
 			</div>
 			<div class="flex flex-col w-full">
-				<label for="yield" class="font-bold pb-2">Pay back USDC</label>
+				<label for="yield" class="font-bold pb-2">Yield (%)</label>
 				<input
 					type="number"
 					id="yield"

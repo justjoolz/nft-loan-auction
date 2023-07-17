@@ -1,6 +1,6 @@
 import * as fcl from "@onflow/fcl";
 import "./config";
-import { user, transactionStatus, usersNFTs, usersFTs, ftTokens, usersBasketIds, selectedBasketMeta, loanAuctions } from './stores';
+import { user, transactionStatus, usersNFTs, usersFTs, ftTokens, usersBasketIds, selectedBasketMeta, loanAuctions, basket, loansForAccount } from './stores';
 import { GET_ALL_NFTS_IN_ACCOUNT_SCRIPT } from "./scripts";
 import type { CurrentUser } from "@onflow/fcl/types/current-user";
 import { CREATE_BASKET } from "./txs/createBasket";
@@ -132,6 +132,12 @@ export const getLoansForAccount = async (addr: String) => {
             args: (arg, t) => [arg(addr, t.Address)]
         })
         console.log({ result })
+        fcl.tx(result).subscribe(res => {
+            transactionStatus.set(res.status)
+            loansForAccount.set(res)
+            console.log({ res })
+        })
+
     } catch (e) {
         console.log(e);
     }
@@ -264,7 +270,7 @@ export const borrowFunds = async (auctionID: string, amount: string) => {
         }
     }`
     try {
-        const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64), arg(amount, t.UFix64)] })
+        const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64), arg(toUFix64(amount), t.UFix64)] })
         console.log(tx)
         fcl.tx(tx).subscribe(res => {
             transactionStatus.set(res.status)
@@ -292,6 +298,32 @@ export const settleAuction = (auctionID: string) => {
     try {
         const tx = fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64)] })
         console.log(tx)
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export const cancelAuction = async (auctionID: string) => {
+    const cadence = `
+    import NFTLoanAuction from "../../contracts/NFTLoanAuction.cdc"
+
+    transaction( auctionID: UInt64 ) {
+        prepare(signer: AuthAccount) {
+            let auctionRef = NFTLoanAuction.borrowLoanAuction(id: auctionID)
+            auctionRef.cancelAuction() 
+        }
+    }`
+
+    try {
+        const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64)] })
+        fcl.tx(tx).subscribe(res => {
+            transactionStatus.set(res.status)
+            console.log({ res })
+            if (res.status === 4) {
+                getAllLoanAuctionMeta()
+                getLoanAuctionMeta(auctionID.toString())
+            }
+        })
     } catch (e) {
         console.log(e);
     }
@@ -347,6 +379,16 @@ export const repayFunds = async (auctionID: number | string, amount: number | st
     try {
         const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64), arg(amount, t.UFix64)] })
         console.log(tx)
+        fcl.tx(tx).subscribe(res => {
+            transactionStatus.set(res.status)
+            console.log({ res })
+            if (res.status === 4) {
+                getAllLoanAuctionMeta()
+                getLoanAuctionMeta(auctionID.toString())
+                transactionStatus.set("repayment succesful!")
+            }
+        })
+
     } catch (e) {
         console.log(e);
     }

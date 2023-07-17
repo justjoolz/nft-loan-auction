@@ -5,15 +5,17 @@
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
 	import OffersCard from '../Cards/OffersCard.svelte';
 	import { lendFunds, borrowFunds } from '$lib/flow/actions';
+	import NftCard from '../Cards/NFTCard.svelte';
+	import { user } from '$lib/flow/stores';
 
 	export let parent: any;
 	export let loan: any = $modalStore[0].meta;
-	let currentOffer: number = loan.offer;
+	// let currentOffer: number = loan.offer;
 	let interest: number = loan.yield;
 
 	let amount: number = 0; // input
 
-	let isOwned: boolean = false;
+	let isOwned = loan.owner === $user.addr;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
 	// CURRENTLY USING HARDCODED VALUES FOR TESTING
@@ -46,6 +48,10 @@
 	};
 
 	let amountToBorrow: number = loan.offer;
+
+	const handleCancelClick = () => {
+		console.log('canceling loan');
+	};
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -62,7 +68,7 @@
 				<p class="font-bold">Non Fungible Token (Collateral)</p>
 			</div>
 			<div class="gridDisplay gap-2">
-				<!-- <NftCard nft={{ type: nft.type, typeID: nft.typeID, kind: nft.kind }} /> -->
+				<NftCard nft={{ type: nft.type, typeID: nft.typeID, kind: nft.kind }} />
 			</div>
 		</div>
 
@@ -86,16 +92,15 @@
 					<RequestDetails {loan} />
 				{/if}
 			</div>
-			{#if isOwned && currentOffer}
+			{#if isOwned}
 				<div class="flexRowCenter w-full gap-8">
 					<div class="pt-4">
-						<button
-							class="btn variant-filled-primary font-bold"
-							on:click={() => alert('need to implement on contract!')}>Cancel this loan</button
+						<button class="btn variant-filled-primary font-bold" on:click={handleCancelClick}
+							>Cancel this loan</button
 						>
 					</div>
 				</div>
-			{:else if isOwned && currentOffer}
+			{:else if isOwned}
 				<div class="flexRowCenter w-full gap-8">
 					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
 						<div class="flexRowCenter pt-2">
@@ -137,7 +142,8 @@
 					>
 				</div>
 			{/if}
-			<div>
+
+			<!-- <div>
 				<label for="loanAmount" class="font-bold pb-2">Borrow Amount</label>
 				<input
 					type="number"
@@ -147,7 +153,7 @@
 					bind:value={amountToBorrow}
 				/>
 				<button on:click={handleBorrowFundsClick}>Borrow Funds</button>
-			</div>
+			</div> -->
 		</div>
 	</div>
 {/if}

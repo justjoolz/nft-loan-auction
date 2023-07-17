@@ -6,8 +6,11 @@
 
 	let activeLoanAuctions: LoanAuction[] = [];
 	let loanRequests: LoanAuction[] = [];
+
 	$: loanRequests = $loanAuctions.filter((loan) => loan.startTime === null); // Loan startTime is set when the collateral owner borrows offered funds.
 	$: activeLoanAuctions = $loanAuctions.filter((loan) => loan.startTime !== null); // Loan ledger is set when the borrower accepts the loan offer.
+
+	$: console.log({ loanRequests });
 	$: console.log({ activeLoanAuctions });
 </script>
 

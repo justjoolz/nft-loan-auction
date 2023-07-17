@@ -29,6 +29,7 @@
 	on:click={() => modalComponentImage(loan)}
 >
 	<div class="flex flex-col gap-2">
+		Owner: {loan.ownersAddress}
 		{#if loan?.nftType}
 			<!-- {#if loan.items[0].nfts.length > 0} -->
 			<div class="flexRowCenter pt-2">
@@ -62,10 +63,6 @@
 				{/each}
 			</div>
 		{/if}
-		{#if loan.startTime !== null}
-			<CardDetails {loan} type="active" />
-		{:else if loan.type === 'request'}
-			<CardDetails {loan} type="request" />
-		{/if}
+		<CardDetails {loan} />
 	</div>
 </div>
