@@ -61,7 +61,7 @@ export const getAllLoanAuctionMeta = async () => {
     }
 }
 
-export const getLoanAuctionMeta = async (nftID: number) => {
+export const getLoanAuctionMeta = async (nftID: string) => {
     const cadence = `
     import "NFTLoanAuction"
     pub fun main(id: UInt64) : NFTLoanAuction.LoanAuctionMeta {
@@ -181,7 +181,7 @@ export const createLoanAuction = async (nftID: number, duration: number, yield_:
 }
 
 
-export const lendFunds = async (auctionID: number | string, amount: number | string, contractName: string, vaultStoragePath: string, collectionPublicPath: string, ftReceiverPublicPath: string) => {
+export const lendFunds = async (auctionID: number | string, amount: number | string, ftContractName: string, ftContractAddress: string, ftVaultStoragePath: string, collectionPublicPath: string, ftReceiverPublicPath: string) => {
     // const contractName = "FUSD"
     // const storagePath = "/storage/FUSDVault"
     // const collectionPublicPath = "/public/basketCollection"
@@ -191,6 +191,7 @@ export const lendFunds = async (auctionID: number | string, amount: number | str
     import FungibleToken from 0xFungibleToken
     import NonFungibleToken from 0xNonFungibleToken
     import NFTLoanAuction from 0xNFTLoanAuction
+    import ${ftContractName} from ${ftContractAddress}
     
     transaction(auctionID: UInt64, amount: UFix64) {
       prepare(signer: AuthAccount) {
@@ -202,10 +203,11 @@ export const lendFunds = async (auctionID: number | string, amount: number | str
         }
     
         let vaultRef = signer
-          .borrow<&${contractName}.Vault>(from: ${vaultStoragePath})
+          .borrow<&${ftContractName}.Vault>(from: ${ftVaultStoragePath})
           ?? panic("Could not borrow reference to the owner's Vault!")
-    
-        let nftReceiverCap = signer.getCapability<&{NonFungibleToken.CollectionPublic}>(${collectionPublicPath})
+
+          
+          let nftReceiverCap = signer.getCapability<&{NonFungibleToken.CollectionPublic}>(${collectionPublicPath})
         let ftReceiverCap = signer.getCapability<&{FungibleToken.Receiver}>(${ftReceiverPublicPath})
 
         let auctionRef = NFTLoanAuction.borrowLoanAuction(id: auctionID)
@@ -215,8 +217,17 @@ export const lendFunds = async (auctionID: number | string, amount: number | str
       }
     }`
     try {
-        const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64), arg(toUFix64(amount), t.UFix64)] })
-        console.log(tx)
+        const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64), arg(toUFix64(amount), t.UFix64)], limit: 9999 })
+        fcl.tx(tx).subscribe(res => {
+            transactionStatus.set(res.status)
+            console.log({ res })
+            if (res.status === 4) {
+                getAllLoanAuctionMeta()
+                getLoanAuctionMeta(auctionID.toString())
+            }
+        })
+
+
     } catch (e) {
         console.log(e);
     }
@@ -779,9 +790,9 @@ async function fetchUsersData() {
     await getBaskets(get(user).addr ?? '');
 }
 
-export function handleUserChange(user: CurrentUser) {
+export async function handleUserChange(user: CurrentUser) {
     console.log('currentUser changed', { user }, '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-    setupFCL()
+    await setupFCL()
     getAllLoanAuctionMeta()
     if (user?.loggedIn) {
         transactionStatus.set('logged in fetching users data ');

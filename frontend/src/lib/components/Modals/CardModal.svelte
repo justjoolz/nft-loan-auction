@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { modalStore } from '@skeletonlabs/skeleton';
 	import { lendFunds } from '../../flow/actions';
+	import { usersNFTs } from '$lib/flow/stores';
 
 	export let parent: any;
 
@@ -10,9 +11,12 @@
 	let amount = 0;
 	const clickHandler = () => {
 		const auctionId = 0;
-		const contractName = 'Basket';
-		const storagePath = '/storage/flowTokenVault';
-		const collectionPublicPath = 'Basket.CollectionPublicPath';
+
+		const ftContractName = 'FlowToken'; // 'Basket';
+		const ftContractAddress = '0x7e60df042a9c0868'; // mainnet = 0x1654653399040a61
+		const ftVaultStoragePath = '/storage/flowTokenVault';
+
+		const collectionPublicPath = '/public/BasketCollection';
 		const ftReceiverPublicPath = '/public/flowTokenReceiver';
 
 		if (amount <= 0) {
@@ -23,16 +27,18 @@
 		console.log({
 			auctionId,
 			amount,
-			contractName,
-			storagePath,
+			ftContractName,
+			ftVaultStoragePath,
 			collectionPublicPath,
 			ftReceiverPublicPath
 		});
+
 		lendFunds(
 			auctionId,
 			amount,
-			contractName,
-			storagePath,
+			ftContractName,
+			ftContractAddress,
+			ftVaultStoragePath,
 			collectionPublicPath,
 			ftReceiverPublicPath
 		);

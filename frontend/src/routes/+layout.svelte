@@ -20,12 +20,10 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import CardModal from '$lib/components/Modals/CardModal.svelte';
 	import CreateLoanModal from '$lib/components/Modals/CreateLoanModal.svelte';
-	import { authenticate } from '@onflow/fcl';
 	import { onDestroy, onMount } from 'svelte';
 	import type { CurrentUser } from '@onflow/fcl/types/current-user';
 	import { handleUserChange } from '../lib/flow/actions';
 	import { setupFCL } from '../lib/flow/config';
-	// import { setupFCL } from '$lib/flow/config.client'; // in basket lives here
 
 	import { user, transactionStatus } from '../lib/flow/stores';
 	import * as fcl from '@onflow/fcl';
@@ -37,6 +35,7 @@
 	import { logIn, unauthenticate } from '$lib/flow/actions';
 
 	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';
+	import { browser } from '$app/environment';
 
 	function drawerOpen() {
 		drawerStore.open();
@@ -44,10 +43,6 @@
 	}
 	let slug = '';
 
-	onMount(() => {
-		updateSlug();
-		window.addEventListener('popstate', updateSlug);
-	});
 	function updateSlug() {
 		const pathParts = window.location.pathname.split('/');
 		const slugIndex = 2; // Adjust this value based on the position of the "slug" in the URL
@@ -75,15 +70,24 @@
 	let userUnsub: Function;
 
 	onMount(() => {
+		if (!browser) return;
+
 		setupFCL();
+
 		fcl.currentUser.subscribe((data: CurrentUser) => user.set(data));
 		userUnsub = user.subscribe(handleUserChange);
 		txUnsub = transactionStatus.subscribe((value) => {
 			console.log('transactionStatus changed', { value });
 		});
+
+		updateSlug();
+		window.addEventListener('popstate', updateSlug);
 	});
 
 	onDestroy(() => {
+		if (!browser) return;
+
+		window.removeEventListener('popstate', updateSlug);
 		if (userUnsub) userUnsub();
 		if (txUnsub) txUnsub();
 	});
