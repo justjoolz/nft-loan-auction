@@ -24,9 +24,6 @@ export const logIn = () => fcl.logIn();
 export const signUp = () => fcl.signUp();
 
 export const getUsersNFTs = async (addr: String) => {
-	if (!addr) {
-		return;
-	}
 	transactionStatus.set(`Fetching your NFTs... ${addr}`);
 
 	try {
@@ -170,7 +167,8 @@ export const createLoanAuction = async (
 	importAddress: string,
 	collectionStoragePath: string,
 	collectionPublicPath: string,
-	ftReceiverPublicPath: string
+	ftReceiverPublicPath: string,
+	onComplete: Function
 ) => {
 	const cadence = CREATE_LOAN_AUCTION(
 		contractName,
@@ -181,14 +179,14 @@ export const createLoanAuction = async (
 	);
 	console.log({ cadence });
 	transactionStatus.set(
-		`depositing ${nftID} for ${duration} yeild: ${yield_} minimumLoanValueRequested: ${minimumLoanValueRequested} rollingContract: ${rollingContract}`
+		`depositing ${nftID} for ${duration} yield: ${yield_} minimumLoanValueRequested: ${minimumLoanValueRequested} rollingContract: ${rollingContract}`
 	);
 
 	try {
 		const txId = await fcl.mutate({
 			cadence: cadence,
 			args: (arg, t) => [
-				arg(nftID, t.UInt64),
+				arg(nftID.toString(), t.UInt64),
 				arg(toUFix64(duration), t.UFix64),
 				arg(toUFix64(yield_), t.UFix64),
 				arg(toUFix64(minimumLoanValueRequested), t.UFix64),
@@ -198,10 +196,14 @@ export const createLoanAuction = async (
 		});
 
 		fcl.tx(txId).subscribe((res) => {
-			transactionStatus.set(res.status);
+			transactionStatus.set(statusMessages(res.status));
 			console.log({ res });
+			if (res.status === 4) {
+				transactionStatus.set('Auction created succesfully!');
+				getAllLoanAuctionMeta()
+				onComplete();
+			}
 		});
-		transactionStatus.set('auction created succesfully!');
 	} catch (e) {
 		transactionStatus.set(e);
 		console.log(e);
@@ -215,7 +217,8 @@ export const lendFunds = async (
 	ftContractAddress: string,
 	ftVaultStoragePath: string,
 	collectionPublicPath: string,
-	ftReceiverPublicPath: string
+	ftReceiverPublicPath: string,
+	onComplete: Function
 ) => {
 	// const contractName = "FUSD"
 	// const storagePath = "/storage/FUSDVault"
@@ -232,9 +235,9 @@ export const lendFunds = async (
       prepare(signer: AuthAccount) {
     
         // check if signer has LoanManager resource
-        if signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) == nil {
-          signer.save( <- NFTLoanAuction.createLoanManager(), to: NFTLoanAuction.LoanManagerStoragePath )
-          signer.link<&NFTLoanAuction.LoanManager>(NFTLoanAuction.LoanManagerPublicPath, target:NFTLoanAuction.LoanManagerStoragePath)
+        if signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.getLoanManagerStoragePath()) == nil {
+          signer.save( <- NFTLoanAuction.createLoanManager(), to: NFTLoanAuction.getLoanManagerStoragePath() )
+          signer.link<&NFTLoanAuction.LoanManager>(NFTLoanAuction.getLoanManagerPublicPath(), target:NFTLoanAuction.getLoanManagerStoragePath())
         }
     
         let vaultRef = signer
@@ -254,15 +257,16 @@ export const lendFunds = async (
 	try {
 		const tx = await fcl.mutate({
 			cadence,
-			args: (arg, t) => [arg(auctionID, t.UInt64), arg(toUFix64(amount), t.UFix64)],
+			args: (arg, t) => [arg(auctionID.toString(), t.UInt64), arg(toUFix64(amount), t.UFix64)],
 			limit: 9999
 		});
 		fcl.tx(tx).subscribe((res) => {
-			transactionStatus.set(res.status);
+			transactionStatus.set(statusMessages(res.status));
 			console.log({ res });
 			if (res.status === 4) {
 				getAllLoanAuctionMeta();
 				getLoanAuctionMeta(auctionID.toString());
+				onComplete();
 			}
 		});
 	} catch (e) {
@@ -276,7 +280,7 @@ export const reduceOffer = async (offerID: number | string, amount: number | str
 
     transaction(offerID: UInt64, amount: UFix64) {
       prepare(signer: AuthAccount) {
-        let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) ?? panic("can't borrow")
+        let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.getLoanManagerStoragePath()) ?? panic("can't borrow")
         let auctionRef = auctionManager.borrowOfferProxy(id: offerID) ?? panic("can't borrow")
         auctionRef.withdrawFunds(amount: amount) 
       }
@@ -284,7 +288,7 @@ export const reduceOffer = async (offerID: number | string, amount: number | str
 	try {
 		const tx = await fcl.mutate({
 			cadence,
-			args: (arg, t) => [arg(offerID, t.UInt64), arg(amount, t.UFix64)]
+			args: (arg, t) => [arg(offerID.toString(), t.UInt64), arg(amount, t.UFix64)]
 		});
 		console.log(tx);
 	} catch (e) {
@@ -292,12 +296,12 @@ export const reduceOffer = async (offerID: number | string, amount: number | str
 	}
 };
 
-export const borrowFunds = async (auctionID: string, amount: string) => {
+export const borrowFunds = async (auctionID: string, amount: string, onComplete: Function) => {
 	const cadence = `
     import "NFTLoanAuction" 
     transaction(auctionID: UInt64, amount: UFix64) {
         prepare(signer: AuthAccount) {
-            let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) ?? panic("can't borrow")
+            let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.getLoanManagerStoragePath()) ?? panic("can't borrow")
             let auctionRef = auctionManager.borrowLoanProxy(id: auctionID)!
             auctionRef.borrowFunds( borrowAmount: amount ) 
         }
@@ -305,15 +309,16 @@ export const borrowFunds = async (auctionID: string, amount: string) => {
 	try {
 		const tx = await fcl.mutate({
 			cadence,
-			args: (arg, t) => [arg(auctionID, t.UInt64), arg(toUFix64(amount), t.UFix64)]
+			args: (arg, t) => [arg(auctionID.toString(), t.UInt64), arg(toUFix64(amount), t.UFix64)]
 		});
 		console.log(tx);
 		fcl.tx(tx).subscribe((res) => {
-			transactionStatus.set(res.status);
+			transactionStatus.set(statusMessages(res.status));
 			console.log({ res });
 			if (res.status === 4) {
 				getAllLoanAuctionMeta();
 				getLoanAuctionMeta(auctionID.toString());
+				onComplete();
 			}
 		});
 	} catch (e) {
@@ -331,33 +336,34 @@ export const settleAuction = (auctionID: string) => {
     }
     }`;
 	try {
-		const tx = fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64)] });
+		const tx = fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID.toString(), t.UInt64)] });
 		console.log(tx);
 	} catch (e) {
 		console.log(e);
 	}
 };
 
-export const cancelAuction = async (auctionID: string) => {
+export const cancelAuction = async (auctionID: string, onComplete: Function) => {
 	const cadence = `
     import "NFTLoanAuction"
 
     transaction( auctionID: UInt64 ) {
         prepare(signer: AuthAccount) {
-            let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) ?? panic("can't borrow")
+            let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.getLoanManagerStoragePath()) ?? panic("can't borrow")
             let auctionRef = auctionManager.borrowLoanProxy(id: auctionID)!
             auctionRef.cancelAuction() 
         }
     }`;
 
 	try {
-		const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64)], limit: 9999 })
+		const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID.toString(), t.UInt64)], limit: 9999 })
 		fcl.tx(tx).subscribe(res => {
-			transactionStatus.set(res.status)
+			transactionStatus.set(statusMessages(res.status))
 			console.log({ res })
 			if (res.status === 4) {
 				getAllLoanAuctionMeta()
 				getLoanAuctionMeta(auctionID.toString())
+				onComplete();
 			}
 		})
 	} catch (e) {
@@ -370,7 +376,7 @@ export const increaseOffer = async (
 	amount: string,
 	contractName: string,
 	contractAddress: string,
-	storagePath: string
+	storagePath: string,
 ) => {
 	const cadence = `
     import 0xNFTLoanAuction 
@@ -383,7 +389,7 @@ export const increaseOffer = async (
           ?? panic("Could not borrow reference to the owner's Vault!")
     
     
-        let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) ?? panic("can't borrow")
+        let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.getLoanManagerStoragePath()) ?? panic("can't borrow")
         let auctionRef = auctionManager.borrowOfferProxy(id: offerID) ?? panic("can't borrow")
         
         let funds <- vaultRef.withdraw(amount: amount)
@@ -394,7 +400,7 @@ export const increaseOffer = async (
 	try {
 		const tx = await fcl.mutate({
 			cadence,
-			args: (arg, t) => [arg(auctionID, t.UInt64), arg(amount, t.UFix64)]
+			args: (arg, t) => [arg(auctionID.toString(), t.UInt64), arg(amount, t.UFix64)]
 		});
 		console.log(tx);
 	} catch (e) {
@@ -407,7 +413,8 @@ export const repayFunds = async (
 	amount: number | string,
 	ftName: string,
 	ftAddress: string,
-	ftStoragePath: string
+	ftStoragePath: string,
+	onComplete: Function
 ) => {
 	// /storage/FUSDVault
 	const cadence = `
@@ -417,7 +424,7 @@ export const repayFunds = async (
         transaction(auctionID: UInt64, amount: UFix64) {
             prepare(signer: AuthAccount) {
 
-                let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) ?? panic("can't borrow")
+                let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.getLoanManagerStoragePath()) ?? panic("can't borrow")
                 let auctionRef = auctionManager.borrowLoanProxy(id: auctionID)!
                 
                 let vaultRef = signer
@@ -430,16 +437,17 @@ export const repayFunds = async (
 	try {
 		const tx = await fcl.mutate({
 			cadence,
-			args: (arg, t) => [arg(auctionID, t.UInt64), arg(amount, t.UFix64)]
+			args: (arg, t) => [arg(auctionID.toString(), t.UInt64), arg(amount, t.UFix64)]
 		});
 		console.log(tx);
 		fcl.tx(tx).subscribe((res) => {
-			transactionStatus.set(res.status);
+			transactionStatus.set(statusMessages(res.status));
 			console.log({ res });
 			if (res.status === 4) {
 				getAllLoanAuctionMeta();
 				getLoanAuctionMeta(auctionID.toString());
 				transactionStatus.set('repayment succesful!');
+				onComplete()
 			}
 		});
 	} catch (e) {
@@ -460,7 +468,7 @@ export const repayLoan = async (
         transaction(auctionID: UInt64) {
             prepare(signer: AuthAccount) {
 
-                let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) ?? panic("can't borrow")
+                let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.getLoanManagerStoragePath()) ?? panic("can't borrow")
                 let auctionRef = auctionManager.borrowLoanProxy(id: auctionID)!
                 
                 let vaultRef = signer
@@ -472,7 +480,7 @@ export const repayLoan = async (
         }
         `;
 	try {
-		const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64)] });
+		const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID.toString(), t.UInt64)] });
 		console.log(tx);
 	} catch (e) {
 		console.log(e);
@@ -903,20 +911,16 @@ export const sendTokens = async (recipient: string, amount: string) => {
 
 	const txId = await fcl.mutate({ cadence, args, limit });
 
-	console.log('Waiting for transaction to be sealed...');
-
 	const txDetails = await fcl.tx(txId).onceSealed();
 	console.log({ txDetails });
 };
 
 const getFTs = async () => {
-	console.log('getting token list');
 	let env = PUBLIC_FLOW_NETWORK === 'mainnet' ? ENV.Mainnet : ENV.Testnet;
 	console.log(PUBLIC_FLOW_NETWORK, env);
 	return new TokenListProvider().resolve('CDN' as Strategy, env).then((tokens) => {
 		const tokenList = tokens.getList();
 		ftTokens.set(tokenList);
-		console.log('set token list');
 		return tokenList;
 	});
 };
@@ -925,18 +929,15 @@ async function fetchUsersData() {
 	await getUsersNFTs(get(user).addr ?? '');
 
 	await getFTs().then(async (ftTokens) => {
-		console.log('fetching token balances....');
 		await fetchTokenBalances(ftTokens);
 	});
 
-	await getBaskets(get(user).addr ?? '');
 }
 
 export async function handleUserChange(user: CurrentUser) {
 	console.log(
 		'currentUser changed',
-		{ user },
-		'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+		{ user }
 	);
 	await setupFCL();
 	getAllLoanAuctionMeta();
@@ -1009,4 +1010,18 @@ function toUFix64(num: string | number): string {
 		throw new Error(`Invalid input: ${num}`);
 	}
 	return parsedNum.toFixed(8);
+}
+
+function statusMessages(code: number): string {
+	switch (code) {
+		case 0: return 'Status unknown?! Cool!'
+		case 1: return "Transaction Pending - Awaiting Finalization"
+		case 2: return "Transaction Finalized - Awaiting Execution"
+		case 3: return "Transaction Executing - Awaiting Sealing"
+		case 4: return "Transaction Sealed - Transaction Complete. At this point the transaction result has been committed to the blockchain."
+		case 5: return "Transaction Expired - Transaction Expired."
+		default:
+			break;
+	}
+	return code.toString()
 }

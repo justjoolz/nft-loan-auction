@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { LoanAuction } from '../../flow/stores';
-
-	export let loan: LoanAuction;
+	export let loan: any;
 </script>
 
 <div class="flexRowCenter w-full gap-8 text-lg">

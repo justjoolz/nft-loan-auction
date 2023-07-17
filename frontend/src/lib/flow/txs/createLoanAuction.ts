@@ -23,9 +23,9 @@ transaction( nftID: UInt64, duration: UFix64, yield: UFix64, minimumLoanValueReq
     let nftReceiverCap = signer.getCapability<&{NonFungibleToken.CollectionPublic}>(collectionPublicPath)
 
     // check if signer has LoanManager resource
-    if signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) == nil {
-      signer.save( <- NFTLoanAuction.createLoanManager(), to: NFTLoanAuction.LoanManagerStoragePath )
-      signer.link<&NFTLoanAuction.LoanManager>(NFTLoanAuction.LoanManagerPublicPath, target:NFTLoanAuction.LoanManagerStoragePath)
+    if signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.getLoanManagerStoragePath()) == nil {
+      signer.save( <- NFTLoanAuction.createLoanManager(), to: NFTLoanAuction.getLoanManagerStoragePath() )
+      signer.link<&NFTLoanAuction.LoanManager>(NFTLoanAuction.getLoanManagerPublicPath(), target:NFTLoanAuction.getLoanManagerStoragePath())
     }
   
     NFTLoanAuction.createLoanAuction( nft: <- nft, 

@@ -25,7 +25,7 @@
 	import { handleUserChange } from '../lib/flow/actions';
 	import { setupFCL } from '../lib/flow/config';
 
-	import { user, transactionStatus } from '../lib/flow/stores';
+	import { user, transactionStatus, usersFTs } from '../lib/flow/stores';
 	import * as fcl from '@onflow/fcl';
 
 	const t: ToastSettings = {
@@ -36,6 +36,7 @@
 
 	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';
 	import { browser } from '$app/environment';
+	import type { TokenInfo } from 'flow-native-token-registry';
 
 	function drawerOpen() {
 		drawerStore.open();
@@ -65,6 +66,17 @@
 			ref: LoanRequestModal
 		}
 	};
+
+	let tokens = $usersFTs;
+	let flowToken: any;
+	$: {
+		if (tokens.length) {
+			console.log({ tokens });
+			flowToken = tokens?.filter((token) => token.token === 'FLOW')[0] ?? { balance: '?' };
+			console.log(flowToken);
+		}
+	}
+	// $: flowBalance = $usersFTs.filter((token) => token.token === 'FLOW')[0].balance ?? 0;
 
 	let txUnsub: Function;
 	let userUnsub: Function;
@@ -117,6 +129,9 @@
 					</span>
 				</button>
 				{#if $user.loggedIn}
+					<div>
+						{flowToken?.balance} FLOW
+					</div>
 					<a href="/my-loans">
 						<button class="hidden md:block btn text-lg hover:variant-ringed-primary"
 							>My loans</button
@@ -142,5 +157,12 @@
 		<slot />
 	</div>
 	<!-- ---- / ---- -->
+	<svelte:fragment slot="footer">
+		<div class="flex flex-col items-center justify-center gap-4">
+			<p class="text-sm text-center">
+				{$transactionStatus}
+			</p>
+		</div>
+	</svelte:fragment>
 	<!-- (pageFooter) -->
 </AppShell>
