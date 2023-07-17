@@ -16,8 +16,8 @@
 
 	let amount: number = loan.offer * 1.1; // input
 
-	let isOwned = false;
-	$: isOwned = loan.ownersAddress === $user?.addr;
+	let isUserOwner = false;
+	$: isUserOwner = loan.ownersAddress === $user?.addr;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
 	const onComplete = () => {
@@ -102,13 +102,13 @@
 				</div>
 			{/if} -->
 			<div class="py-6">
-				{#if loan.type === 'active'}
+				{#if loan.offer != null}
 					<LoanDetails {loan} />
 				{:else if loan.type === 'request'}
 					<RequestDetails {loan} />
 				{/if}
 			</div>
-			{#if isOwned}
+			{#if isUserOwner}
 				<div class="flexRowCenter w-full gap-8">
 					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
 						<div class="flexRowCenter pt-2">

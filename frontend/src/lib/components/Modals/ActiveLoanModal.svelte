@@ -16,8 +16,8 @@
 	let borrowAmount: number;
 	let payBackAmount: number;
 
-	let isOwned = false;
-	$: isOwned = $user.addr === loan.owner;
+	let isUserOwner = false;
+	$: isUserOwner = $user.addr === loan.owner;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
 	const onComplete = () => {
@@ -95,7 +95,7 @@
 					<RequestDetails {loan} />
 				{/if}
 			</div>
-			{#if isOwned}
+			{#if isUserOwner}
 				<div class="flex w-full gap-8">
 					<div class="flex flex-col w-full">
 						<label for="borrow" class="font-bold pb-2">Borrow USDC</label>
@@ -175,7 +175,7 @@
 						/>
 					</div>
 				</div>
-				{#if !isOwned}
+				{#if !isUserOwner}
 					<div class="pt-4">
 						<button class="btn variant-filled-primary font-bold">Make An Offer</button>
 					</div>
