@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getUsersNFTs } from '$lib/flow/actions';
 	import { user } from '$lib/flow/stores';
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { logIn } from '$lib/flow/actions';
@@ -9,6 +10,7 @@
 			component: 'createLoan'
 		};
 		modalStore.trigger(modal);
+		getUsersNFTs($user.addr);
 	}
 
 	function handleCreateLoan(): void {

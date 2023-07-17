@@ -1,4 +1,3 @@
-import type { LoanAuction } from '$lib/flow/stores';
 
 function startDate(time: string) {
 	const startDate =

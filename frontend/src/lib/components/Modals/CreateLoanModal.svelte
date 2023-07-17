@@ -14,7 +14,7 @@
 		minimumLoanValueRequested: number = 0,
 		rollingContract: boolean = true;
 
-	const handleCreateLoanAuctionClick = () => {
+	const handleCreateLoanAuctionClick = async () => {
 		if (!parseInt($selectedCollateralNFT.id)) {
 			alert('Please select a NFT');
 			return;
@@ -26,7 +26,11 @@
 		const collectionPublicPath = '/public/' + $selectedCollateralNFT.publicPath.identifier;
 		const ftReceiverPublicPath = '/public/flowTokenReceiver'; // HARDCODED TO USE FLOW TOKEN
 
-		createLoanAuction(
+		const onComplete = () => {
+			parent.onClose();
+		};
+
+		await createLoanAuction(
 			parseInt($selectedCollateralNFT.id),
 			duration * 60 * 60 * 24,
 			_yield / 100,
@@ -36,7 +40,8 @@
 			importAddress,
 			collectionStoragePath,
 			collectionPublicPath,
-			ftReceiverPublicPath
+			ftReceiverPublicPath,
+			onComplete
 		);
 	};
 

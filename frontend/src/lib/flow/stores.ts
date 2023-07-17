@@ -12,6 +12,7 @@ export const usersFTs = writable({} as { token: string; balance: number }[]);
 export const loanAuctions = writable([] as LoanAuction[]);
 export const selectedCollateralNFT = writable({} as NFTCatalogEntry);
 export const loansForAccount = writable([] as LoanAuction[]);
+export const flowTokenBalance = writable(0);
 
 export const usersBasketIds = writable([] as number[]);
 export const selectedBasketMeta = writable({} as BasketNFTMeta);

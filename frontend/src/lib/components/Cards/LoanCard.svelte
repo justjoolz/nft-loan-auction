@@ -2,8 +2,8 @@
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import NftCard from './NFTCard.svelte';
 	import FtCard from './FTCard.svelte';
-	import CardDetails from '../DataDisplay/CardDetails.svelte';
 	import { currentUser } from '@onflow/fcl';
+	import CardDetails from '../DataDisplay/CardDetails.svelte';
 
 	export let loan: any = {};
 
@@ -41,7 +41,7 @@
 					<!-- {#each loan.items[0].nfts as nft} -->
 					<NftCard nft={loan.nftType} />
 					<!-- {/each} -->
-				</div>				
+				</div>
 			</div>
 		{/if}
 
@@ -54,6 +54,16 @@
 				<CardDetails {loan} />
 			</div>
 		{/if}
+		<!-- <div>
+			{#if loan.offer}
+				Current Offer: ${loan?.offer ?? '--'} FLOW
+				{#if isOwner}
+					<p>Borrow Funds</p>
+				{:else}
+					<p class="font-bold">You are not the owner of this loan</p>
+				{/if}
+			{/if}
+		</div> -->
 
 		<!-- {#if fts.length > 0}
 			<div class="flexRowCenter pt-2">

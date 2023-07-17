@@ -1,22 +1,27 @@
 <script lang="ts">
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
-	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
 	import OffersCard from '../Cards/OffersCard.svelte';
-	import { lendFunds, borrowFunds, cancelAuction } from '$lib/flow/actions';
+	import { lendFunds, borrowFunds, cancelAuction, getAllLoanAuctionMeta } from '$lib/flow/actions';
 	import NftCard from '../Cards/NFTCard.svelte';
 	import { user } from '$lib/flow/stores';
+	import { onMount } from 'svelte';
 
 	export let parent: any;
-	export let loan: any = $modalStore[0].meta;
+	export let loan = $modalStore[0].meta;
 	// let currentOffer: number = loan.offer;
 	let interest: number = loan.yield;
 
 	let amount: number = loan.offer * 1.1; // input
 
-	let isOwned = loan.ownersAddress === $user?.addr;
+	let isOwned = false;
+	$: isOwned = loan.ownersAddress === $user?.addr;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
+
+	const onComplete = () => {
+		parent.onClose();
+	};
 
 	// CURRENTLY USING HARDCODED VALUES FOR TESTING
 	const ftContractName = 'FlowToken';
@@ -28,9 +33,13 @@
 	let nft: any;
 	$: console.log(loan);
 	$: nft = loan.nftType;
-	$: console.log({ amount });
+	$: console.log({ amount, loan });
 
 	const handleOfferFundsClick = () => {
+		if (amount <= 0) {
+			alert('Please enter a valid amount to lend!');
+			return;
+		}
 		lendFunds(
 			loan.id,
 			amount,
@@ -38,26 +47,24 @@
 			ftContractAddress,
 			ftVaultStoragePath,
 			collectionPublicPath,
-			ftReceiverPublicPath
+			ftReceiverPublicPath,
+			onComplete
 		);
 	};
 
-	const handleBorrowFundsClick = () => {
-		console.log('borrowing funds yeah!');
-		borrowFunds(loan.id, amountToBorrow.toString());
+	const handleBorrowundsClick = () => {
+		borrowFunds(loan.id, amountToBorrow.toString(), onComplete);
 	};
 
 	let amountToBorrow: number = loan.offer;
 
-	const handleCancelClick = () => {
-		console.log('canceling loan');
-	};
-
 	const handleCancelLoanAuctionClick = () => {
-		console.log('canceling loan auction yeah!');
-		cancelAuction(loan.id);
-	};
+		cancelAuction(loan.id, onComplete);
+	};	
 	console.log({ loan });
+	onMount(() => {
+		getAllLoanAuctionMeta();
+	});
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -66,6 +73,8 @@
 	<div
 		class="card p-6 md:p-10 variant-filled-tertiary min-w-[90%] md:min-w-4/5 min-h-[90%] md:min-h-4/5 flex flex-col justify-center gap-4"
 	>
+		<pre>{JSON.stringify(loan)}</pre>
+
 		<div class="flexRowCenter relative w-full mb-2">
 			<h2 class="h2 font-bold border-b-2 border-primary-800">Loan Request Details</h2>
 		</div>
@@ -117,7 +126,7 @@
 			{#if isOwned !== true}
 				<div class="flex w-full gap-8">
 					<div class="flex flex-col w-full">
-						<p>Current Offer: {loan.offer}</p>
+						<p>Current Offer: {loan?.offer ?? 'None'}</p>
 						<label for="loanAmount" class="font-bold pb-2">Amount</label>
 						<input
 							type="number"
@@ -145,7 +154,7 @@
 						>Make An Offer</button
 					>
 				</div>
-			{/if}			
+			{/if}
 			<!-- <div>
 				<label for="loanAmount" class="font-bold pb-2">Borrow Amount</label>
 				<input
@@ -161,7 +170,12 @@
 				{#if loan.startTime}
 					Ends in: {loan.startTime + loan.duration} seconds
 				{:else}
-					<button class="btn variant-filled-primary font-bold" on:click={handleCancelLoanAuctionClick}> Cancel the loan! </button>
+					<button
+						class="btn variant-filled-primary font-bold"
+						on:click={handleCancelLoanAuctionClick}
+					>
+						Cancel the loan!
+					</button>
 				{/if}
 			</div>
 		</div>

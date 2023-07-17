@@ -16,16 +16,22 @@
 	let interest: number;
 	let borrowAmount: number;
 	let payBackAmount: number;
-	let isOwned = loan.ownersAddress === $user?.addr;
+
+	let isOwned = false;
+	$: isOwned = $user.addr === loan.owner;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
+
+	const onComplete = () => {
+		parent.onClose();
+	};
 
 	const handleBorrowFundsClick = () => {
 		if (!borrowAmount || borrowAmount > loan.offer) {
 			alert('Please enter a valid amount to borrow!');
 			return;
 		}
-		console.log('borrowing funds yeah!');
-		borrowFunds(loan.id, borrowAmount.toString());
+
+		borrowFunds(loan.id, borrowAmount.toString(), onComplete);
 	};
 
 	const handlePaybackFundsClick = () => {
@@ -33,19 +39,18 @@
 			alert('Please enter a valid amount to pay back!');
 			return;
 		}
-		console.log('paying back funds yeah!');
 
 		// HARDCODED CURRENCY
 		const ftName = 'FlowToken';
 		const ftAddress = '0x7e60df042a9c0868';
 		const ftStoragePath = '/storage/flowTokenVault';
 
-		repayFunds(loan.id, payBackAmount.toString(), ftName, ftAddress, ftStoragePath);
+		repayFunds(loan.id, payBackAmount.toString(), ftName, ftAddress, ftStoragePath, onComplete);
 	};
 
 	const handleCancelLoanAuctionClick = () => {
 		console.log('canceling loan auction yeah!');
-		cancelAuction(loan.id);
+		cancelAuction(loan.id, onComplete);
 	};
 </script>
 
@@ -153,9 +158,11 @@
 						/>
 					</div> -->
 				</div>
-				<div class="pt-4">
-					<button class="btn variant-filled-primary font-bold">Make An Offer</button>
-				</div>
+				{#if !isOwned}
+					<div class="pt-4">
+						<button class="btn variant-filled-primary font-bold">Make An Offer</button>
+					</div>
+				{/if}
 			{/if}
 			<div class="flex relative flex-col w-full py-4">
 				<div>
