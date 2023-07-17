@@ -24,25 +24,23 @@
 	import type { CurrentUser } from '@onflow/fcl/types/current-user';
 	import { handleUserChange } from '../lib/flow/actions';
 	import { setupFCL } from '../lib/flow/config';
+	import flowIcon from '$lib/assets/flow-icon.svg';
 
 	import { user, transactionStatus, usersFTs, flowTokenBalance } from '../lib/flow/stores';
 	import * as fcl from '@onflow/fcl';
 
-	const t: ToastSettings = {
-		message: 'menu opened'
-	};
 	import ActiveLoanModal from '$lib/components/Modals/ActiveLoanModal.svelte';
 	import { logIn, unauthenticate } from '$lib/flow/actions';
 
 	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';
 	import { browser } from '$app/environment';
-	import type { TokenInfo } from 'flow-native-token-registry';
-
+	
 	function drawerOpen() {
 		drawerStore.open();
-		toastStore.trigger(t);
 	}
 	let slug = '';
+	let userFlowTokenBalance: number;
+	$: userFlowTokenBalance = $flowTokenBalance;
 
 	function updateSlug() {
 		const pathParts = window.location.pathname.split('/');
@@ -78,10 +76,9 @@
 
 		fcl.currentUser.subscribe((data: CurrentUser) => user.set(data));
 		userUnsub = user.subscribe(handleUserChange);
-		txUnsub = transactionStatus.subscribe((value) => {
+		txUnsub = transactionStatus.subscribe((value) => {			
 			console.log('transactionStatus changed', { value });
 		});
-
 		updateSlug();
 		window.addEventListener('popstate', updateSlug);
 	});
@@ -119,19 +116,17 @@
 					</span>
 				</button>
 				{#if $user.loggedIn}
-					<div>
-						{$flowTokenBalance} FLOW
+					<div class="flex items-center gap-2">
+						<img src={flowIcon} alt="" class="h-6" />{userFlowTokenBalance}
 					</div>
-					<a href="/my-loans">
-						<button class="hidden md:block btn text-lg hover:variant-ringed-primary"
-							>My loans</button
-						></a
-					><button
-						class="hidden md:block text-lg btn hover:variant-ringed-primary"
+					<button
+						class="hidden md:block text-lg btn hover:variant-ringed-primary font-bold"
 						on:click={unauthenticate}>Log Out</button
 					>
 				{:else}
-					<button class="hidden md:block btn text-lg hover:variant-ringed-primary" on:click={logIn}
+					<button
+						class="hidden md:block btn text-lg hover:variant-ringed-primary font-bold"
+						on:click={logIn}
 						>Log In
 					</button>
 				{/if}

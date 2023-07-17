@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { modalStore, type ModalSettings, toastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
 	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
@@ -13,7 +13,7 @@
 		lendFunds,
 		repayFunds
 	} from '$lib/flow/actions';
-	import { user } from '$lib/flow/stores';
+	import { user, transactionStatus } from '$lib/flow/stores';
 	import formatDate from '$lib/utils/formatDate';
 
 	export let parent: any;
@@ -22,13 +22,19 @@
 	let interest: number;
 	let borrowAmount: number;
 	let payBackAmount: number;
+	let toastMessage: any;
 
 	let isUserOwner = false;
 	$: isUserOwner = $user.addr === loan.ownersAddress;
+	$: toastMessage = {$transactionStatus};
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
+	const t: ToastSettings = {
+		message: toastMessage
+	};
 
 	const onComplete = () => {
 		getAllLoanAuctionMeta();
+		toastStore.trigger(t);
 		parent.onClose();
 	};
 
@@ -37,7 +43,7 @@
 			alert('Please enter a valid amount to borrow!');
 			return;
 		}
-
+		toastMessage = 'Funds borrowed successfully';
 		borrowFunds(loan.id, borrowAmount.toString(), onComplete);
 	};
 
@@ -51,12 +57,13 @@
 		const ftName = 'FlowToken';
 		const ftAddress = '0x7e60df042a9c0868';
 		const ftStoragePath = '/storage/flowTokenVault';
-
+		toastMessage = 'Funds repaid successfully';
 		repayFunds(loan.id, payBackAmount.toString(), ftName, ftAddress, ftStoragePath, onComplete);
 	};
 
 	const handleCancelLoanAuctionClick = () => {
 		console.log('canceling loan auction yeah!');
+		toastMessage = 'Loan auction canceled successfully';
 		cancelAuction(loan.id, onComplete);
 	};
 
@@ -70,7 +77,7 @@
 		const ftVaultStoragePath = '/storage/flowTokenVault';
 		const collectionPublicPath = '/public/' + loan.nftReceiverCap.path.value.identifier; // $selectedCollateralNFT.publicPath.identifier; // '/public/BasketCollection';
 		const ftReceiverPublicPath = '/public/flowTokenReceiver';
-
+		toastMessage = 'Funds lent successfully';
 		lendFunds(
 			loan.id,
 			amount,
@@ -84,7 +91,7 @@
 	};
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
+
 {#if $modalStore[0]}
 	<button class="btn-icon variant-filled {cButton}" on:click={parent.onClose}>X</button>
 	<div
@@ -92,8 +99,7 @@
 	>
 		<div class="flexRowCenter relative w-full mb-2">
 			<h2 class="h2 font-bold border-b-2 border-primary-800">Active Loan Details</h2>
-		</div>
-		<!-- {#if loan.items[0].nfts.length > 0} -->
+		</div>		
 		<div class="flex flex-col gap-2 bg-tertiary-700 shadow-lg p-6 pt-3 rounded-md">
 			<div class="flexRowCenter">
 				<p class="font-bold">Non Fungible Token (Collateral)</p>
@@ -103,14 +109,14 @@
 			</div>
 		</div>
 
-		<div class="flexColumnCenter gap-2">			
-			<div class="py-6">				
-					<LoanDetails {loan} />				
+		<div class="flexColumnCenter gap-2">
+			<div class="py-6">
+				<LoanDetails {loan} />
 			</div>
 			{#if isUserOwner}
 				<div class="flex w-full gap-8 pb-10">
 					<div class="flex flex-col w-full">
-						<label for="borrow" class="font-bold pb-2">Borrow USDC</label>
+						<label for="borrow" class="font-bold pb-2">Borrow FLOW</label>
 						<input
 							type="number"
 							id="borrow"
@@ -128,7 +134,7 @@
 						</div>
 					</div>
 					<div class="flex flex-col w-full">
-						<label for="payBack" class="font-bold pb-2">Pay back USDC</label>
+						<label for="payBack" class="font-bold pb-2">Pay back FLOW</label>
 						<input
 							type="number"
 							id="payBack"
@@ -145,23 +151,6 @@
 						</div>
 					</div>
 				</div>
-
-				<!-- <div class="flexRowCenter w-full gap-8 mt-8">
-					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
-						<div class="flexRowCenter pt-2">
-							<p class="font-bold">Offers for this loan request</p>
-						</div>
-						<div class="gridDisplay gap-2 pb-4">
-							<OffersCard
-								offer={{
-									amount: loan.offer,
-									interest: loan.yield * 100,
-									duration: loan.duration / (60 * 60 * 24)
-								}}
-							/>
-						</div>
-					</div>
-				</div> -->
 			{:else}
 				<div class="flex w-full items-center justify-center gap-8">
 					<div class="flex flex-col w-1/2">
@@ -187,13 +176,11 @@
 						/>
 					</div> -->
 				</div>
-				{#if !isUserOwner}
-					<div class="pt-4">
-						<button on:click={handleOfferFundsClick} class="btn variant-filled-primary font-bold"
-							>Make An Offer</button
-						>
-					</div>
-				{/if}
+				<div class="pt-4">
+					<button on:click={handleOfferFundsClick} class="btn variant-filled-primary font-bold"
+						>Make An Offer</button
+					>
+				</div>
 			{/if}
 			<div class="flex relative flex-col w-full py-4">
 				<div>
@@ -230,9 +217,12 @@
 
 		<div>
 			{#if loan.startTime}
-				Ends at: <b
-					>{formatDate((parseFloat(loan.startTime) + parseFloat(loan.duration)).toString())}</b
-				>
+				<p>
+					Ends at: <b
+						>{formatDate((parseFloat(loan.startTime) + parseFloat(loan.duration)).toString())}</b
+					>
+					{' '}(All times are in UTC)
+				</p>
 			{:else}
 				<button
 					class="btn variant-filled-primary font-bold"

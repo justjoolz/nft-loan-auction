@@ -11,29 +11,16 @@
 	).toFixed(2);
 </script>
 
-<div class="flexRowCenter w-full gap-8 text-lg">
-	<div>
-		<p class="text-left">
-			Current Borrowed Debt
-			{#if isActive}
-				<b>{`${loan.debt}/${loan.offer}`}</b>
-				{utilizationPercentage}%
-			{:else}
-				Current Offer {loan.offer}
-			{/if}
-		</p>
-	</div>
-
-	<!-- <div class="">
+<div class="flex gap-8 text-lg w-1/2">
+	<div class="">
 		{#if isActive}
 			<div class="text-left">
-				<p class="font-semibold">Current Borrowed Debt</p>
+				<p>Current Borrowed Debt:</p>
 				<p>
-					{`${loan.debt}/${loan.offer}`}
-					(${utilizationPercentage}%)
+					<b>{`${loan.debt}`}</b>
+					({utilizationPercentage}%)
 				</p>
 			</div>
 		{/if}
-	</div> -->
-	
+	</div>
 </div>

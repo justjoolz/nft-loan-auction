@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { requests } from '$lib/utils/requestData';
 	import LoanCard from '$lib/components/Cards/LoanCard.svelte';
 	import { TabGroup, Tab } from '@skeletonlabs/skeleton';
 	import { loanAuctions, type LoanAuction, user } from '$lib/flow/stores';
@@ -7,7 +6,13 @@
 	let tabSet: number = 0;
 
 	let loans: LoanAuction[] = [];
+	let activeLoans: LoanAuction[] = [];
+	let offers: LoanAuction[] = [];
+	let requests: LoanAuction[] = [];
 	$: loans = $loanAuctions.filter((loan) => loan.ownersAddress === $user?.addr);
+	$: activeLoans = loans.filter((loan) => loan.offer !== null);
+	$: offers = $loanAuctions.filter((loan) => loan.offeringAddress === $user?.addr);
+	$: requests = loans.filter((loan) => loan.offer === null);	
 </script>
 
 <div class="flexColumnCenter w-full px-10 py-20">
@@ -33,11 +38,11 @@
 
 	<div class="gridDisplay gap-6 pt-10">
 		{#if tabSet === 0}
-			{#each loans as loan}
+			{#each activeLoans as loan}
 				<LoanCard {loan} />
 			{/each}
 		{:else if tabSet === 1}
-			{#each requests as loan}
+			{#each offers as loan}
 				<LoanCard {loan} />
 			{/each}
 		{:else if tabSet === 2}

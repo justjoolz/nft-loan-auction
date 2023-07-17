@@ -34,13 +34,13 @@
 </script>
 
 <button
+	on:click={handleClick}
 	class={`flex flex-col items-center justify-start bg-tertiary-900 rounded-md hoverShadow p-4 ${
 		isSelected ? 'selectionCard' : ''
 	}`}
 >
 	<span /><span /><span /><span />
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<div class="flex flex-col h-full justify-between" on:click={handleClick}>
+	<div class="flex flex-col h-full justify-between">
 		<div class="flex flex-col items-center w-full">
 			<img src={convertUrl(nft.thumbnail)} alt={nft.name} class="h-12" />
 			<p class="text-sm pt-3 text-center">{nft.name}</p>

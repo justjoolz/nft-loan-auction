@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { modalStore } from '@skeletonlabs/skeleton';
+	import { modalStore, toastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import { selectedCollateralNFT } from '$lib/flow/stores';
 	import { createLoanAuction, getAllLoanAuctionMeta } from '$lib/flow/actions';
 	import ContentDisplay from '../ContentDisplay.svelte';
@@ -7,6 +7,9 @@
 	export let parent: any;
 
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
+	const t: ToastSettings = {
+		message: 'Loan Request Created'
+	};
 
 	let nftId: number = 0,
 		duration: number = 1,
@@ -28,6 +31,7 @@
 
 		const onComplete = () => {
 			getAllLoanAuctionMeta();
+			toastStore.trigger(t);
 			parent.onClose();
 		};
 

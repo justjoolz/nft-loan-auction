@@ -18,6 +18,7 @@ export const usersBasketIds = writable([] as number[]);
 export const selectedBasketMeta = writable({} as BasketNFTMeta);
 
 export const transactionStatus = writable();
+export const toastMessage = writable('');
 export const walletContents = writable();
 export const basket = writable();
 export const walletNFTWithdrawIds = writable([] as number[]);
@@ -40,6 +41,7 @@ export function ftDictionaryToArray(dictionary: any) {
 
 
 export interface LoanAuction {
+	offeringAddress: string;
     id: string,
     debt: string,
     repaid: string,

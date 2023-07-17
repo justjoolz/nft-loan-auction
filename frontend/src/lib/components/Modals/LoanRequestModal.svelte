@@ -1,11 +1,16 @@
 <script lang="ts">
-	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import {
+		modalStore,
+		type ModalSettings,
+		type ToastSettings,
+		toastStore
+	} from '@skeletonlabs/skeleton';
 
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
 	import OffersCard from '../Cards/OffersCard.svelte';
 	import { lendFunds, borrowFunds, cancelAuction, getAllLoanAuctionMeta } from '$lib/flow/actions';
 	import NftCard from '../Cards/NFTCard.svelte';
-	import { user } from '$lib/flow/stores';
+	import { user, toastMessage } from '$lib/flow/stores';
 	import { onMount } from 'svelte';
 
 	export let parent: any;
@@ -14,6 +19,9 @@
 	let interest: number = loan.yield;
 
 	let amount: number = loan.offer * 1.1; // input
+	const t: ToastSettings = {
+		message: $toastMessage
+	};
 
 	let isUserOwner = false;
 	$: isUserOwner = loan.ownersAddress === $user?.addr;
@@ -21,6 +29,7 @@
 
 	const onComplete = () => {
 		getAllLoanAuctionMeta();
+		toastStore.trigger(t);
 		parent.onClose();
 	};
 
@@ -43,6 +52,8 @@
 			alert('Please enter a valid amount to lend!');
 			return;
 		}
+		toastMessage.set('Funds lent successfully');
+
 		lendFunds(
 			loan.id,
 			amount,
@@ -56,12 +67,16 @@
 	};
 
 	const handleBorrowundsClick = () => {
+		toastMessage.set('Funds borrowed successfully');
 		borrowFunds(loan.id, amountToBorrow.toString(), onComplete);
 	};
 
 	let amountToBorrow: number = loan.offer;
 
 	const handleCancelLoanAuctionClick = () => {
+		toastMessage.set('Loan auction cancelled successfully');
+		console.log({ toastMessage });
+
 		cancelAuction(loan.id, onComplete);
 	};
 	console.log({ loan });
@@ -71,12 +86,14 @@
 			alert('Please enter a valid amount to borrow!');
 			return;
 		}
+		toastMessage.set('Funds borrowed successfully');
 		borrowFunds(loan.id, borrowAmount.toString(), onComplete);
 	};
 
 	onMount(() => {
 		getAllLoanAuctionMeta();
 	});
+	
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -85,12 +102,10 @@
 	<div
 		class="card p-6 md:p-10 variant-filled-tertiary min-w-[90%] md:min-w-4/5 min-h-[90%] md:min-h-4/5 flex flex-col justify-center gap-4"
 	>
-		<pre>{JSON.stringify(loan)}</pre>
-
 		<div class="flexRowCenter relative w-full mb-2">
 			<h2 class="h2 font-bold border-b-2 border-primary-800">Loan Request Details</h2>
 		</div>
-		<div class="flex flex-col gap-2 bg-tertiary-700 shadow-lg p-6 pt-3 rounded-md">
+		<div class="flex flex-col gap-2 bg-tertiary-700 shadow-lg p-8 pt-4 rounded-md">
 			<div class="flexRowCenter">
 				<p class="font-bold">Non Fungible Token (Collateral)</p>
 			</div>
@@ -100,74 +115,55 @@
 		</div>
 
 		<div class="flexColumnCenter gap-2">
-			<!-- {#if loan.items[1].fts.length > 0}
-				<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
-					<div class="flexRowCenter pt-2">
-						<p class="font-bold">Fungible Tokens</p>
-					</div>
-					<div class="gridDisplay gap-2 pb-4">
-						{#each loan.items[1].fts as ft}
-							<FtCard {ft} />
-						{/each}
-					</div>
-				</div>
-			{/if} -->
 			<div class="py-6">
 				<RequestDetails {loan} />
 			</div>
 			{#if isUserOwner}
 				<div class="flexRowCenter w-full gap-8">
-					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
-						<div class="flexRowCenter pt-2">
-							<p class="font-bold">Offers for your loan request</p>
+					<div class="w-full shadow-lg bg-tertiary-700 p-8 pt-4 rounded-md mb-3">
+						<div class="flexRowCenter py-2">
+							<p class="font-bold">Offer for your Loan Request</p>
 						</div>
-						<div class="gridDisplay gap-2 pb-4">
+						<div class="py-4">
 							{#if loan.offer != null}
-								<OffersCard
-									offer={{
-										amount: loan.offer,
-										interest: loan.yield * 100,
-										duration: loan.duration / (60 * 60 * 24)
-									}}
-								/>
-								<input
-									type="number"
-									id="loanAmount"
-									class="input w-full"
-									placeholder="Amount"
-									bind:value={borrowAmount}
-									tabindex="0"
-								/>
-								<button
-									class="btn variant-filled-primary font-bold"
-									on:click={handleBorrowFundsClick}
-								>
-									Borrow Funds
-								</button>
+								<div class="flex w-full gap-10">
+									<OffersCard
+										offer={{
+											amount: loan.offer,
+											interest: loan.yield * 100,
+											duration: loan.duration / (60 * 60 * 24)
+										}}
+									/>
+									<div class="flex flex-col gap-4 w-1/2">
+										<input
+											type="number"
+											id="loanAmount"
+											class="input w-full"
+											placeholder="Amount"
+											bind:value={borrowAmount}
+											tabindex="0"
+										/>
+										<button
+											class="btn variant-filled-primary font-bold"
+											on:click={handleBorrowFundsClick}
+										>
+											Borrow Funds
+										</button>
+									</div>
+								</div>
 							{:else}
-								<p>Your loan currently has no offers!</p>
+								<p class="w-full text-center">Your loan currently has no offer!</p>
 							{/if}
 						</div>
 					</div>
-					{#if loan.offer === null}
-						<p class="text-center w-full pt-4 pb-2">No offers yet</p>
-					{:else}
-						<div class="gridDisplay gap-2 pb-4">
-							<OffersCard
-								offer={{
-									offer: loan.offer,
-									interest: loan.yield * 100,
-									duration: loan.duration / (60 * 60 * 24)
-								}}
-							/>
-						</div>
-					{/if}
 				</div>
 			{/if}
 			{#if isUserOwner !== true}
-				<div class="flex w-full gap-8">
+				<div class="flex w-1/2 gap-8">
 					<div class="flex flex-col w-full">
-						<p>Current Offer: {loan?.offer ?? 'None'}</p>
+						<p class="w-full text-center text-lg font-bold">
+							Current Offer: {loan?.offer ?? 'None'}
+						</p>
 						<label for="loanAmount" class="font-bold pb-2">Amount</label>
 						<input
 							type="number"
@@ -196,27 +192,14 @@
 					>
 				</div>
 			{/if}
-			<!-- <div>
-				<label for="loanAmount" class="font-bold pb-2">Borrow Amount</label>
-				<input
-					type="number"
-					id="borrowAmount"
-					class="input w-full"
-					placeholder="borrow amount"
-					bind:value={amountToBorrow}
-				/>
-				<button on:click={handleBorrowFundsClick}>Borrow Funds</button>
-			</div> -->
 			<div class="mt-4">
-				{#if loan.startTime}
-					Ends in: {loan.startTime + loan.duration} seconds
-				{:else}
+				{#if isUserOwner === true}
 					<button
 						class="btn variant-filled-primary font-bold"
 						on:click={handleCancelLoanAuctionClick}
 					>
-						Cancel the loan!
-					</button>
+						Cancel the loan
+					</button>					
 				{/if}
 			</div>
 		</div>

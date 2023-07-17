@@ -17,13 +17,9 @@
 		getAllLoanAuctionMeta();
 		modalStore.trigger(modal);
 	}
-	// console.log(loan);
 
-	let fts;
 	let isOwner = false;
 	$: isOwner = loan.ownersAddress === $currentUser?.addr;
-	$: fts = loan.length ? loan?.items[1].fts : [];
-	console.log({ loan });
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -31,7 +27,7 @@
 	class="card p-6 variant-ghost-tertiary flex flex-col justify-between gap-4 relative cursor-pointer hoverShadow"
 	on:click={() => modalComponentImage(loan)}
 >
-	<div class="flex flex-col gap-2">
+	<div class="flex flex-col gap-2 w-full">
 		Owner: {isOwner ? 'You' : loan.ownersAddress}
 		{#if loan?.nftType}
 			<!-- {#if loan.items[0].nfts.length > 0} -->
@@ -48,10 +44,10 @@
 		{/if}
 
 		{#if loan.offer}
-			<div class="flex justify-between">
-				<div class="text-lg">
-					<p class="font-semibold">Current Offer:</p>
-					<p>{loan.offer} FLOW</p>
+			<div class="flex justify-between w-full">
+				<div class="text-lg w-1/2">
+					<p>Current Offer:</p>
+					<p><b>{loan.offer}</b> FLOW</p>
 				</div>
 				<CardDetails {loan} />
 			</div>
