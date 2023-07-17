@@ -1,4 +1,4 @@
-<script lang="ts">	
+<script lang="ts">
 	import Hero from '$lib/components/Hero.svelte';
 	import CardDisplay from '$lib/components/Cards/CardDisplay.svelte';
 	import { getAllLoanAuctionMeta } from '../lib/flow/actions';

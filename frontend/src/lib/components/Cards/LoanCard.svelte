@@ -21,6 +21,7 @@
 	let isOwner = false;
 	$: isOwner = loan.ownersAddress === $currentUser?.addr;
 	$: fts = loan.length ? loan?.items[1].fts : [];
+	console.log({ loan });
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -32,28 +33,29 @@
 		Owner: {isOwner ? 'You' : loan.ownersAddress}
 		{#if loan?.nftType}
 			<!-- {#if loan.items[0].nfts.length > 0} -->
-			<div class="flexRowCenter pt-2">
-				<p class="font-bold">Non Fungible Token (Collateral)</p>
+			<div class="flexRowCenter py-2">
+				<p class="font-bold text-lg">Non Fungible Token (Collateral)</p>
 			</div>
-			<div class="gridDisplay2 gap-2">
-				<!-- {#each loan.items[0].nfts as nft} -->
-				<NftCard nft={loan.nftType} />
-				<!-- {/each} -->
+			<div class="flex gap-6 pb-4">
+				<div class="w-full">
+					<!-- {#each loan.items[0].nfts as nft} -->
+					<NftCard nft={loan.nftType} />
+					<!-- {/each} -->
+				</div>				
 			</div>
 		{/if}
 
-		<div>
-			{#if loan.offer}
-				Current Offer: ${loan.offer} FLOW
-				<!-- {#if isOwner}
-					<p>Borrow Funds</p>
-				{:else}
-					<p class="font-bold">You are not the owner of this loan</p>
-				{/if} -->
-			{/if}
-		</div>
+		{#if loan.offer}
+			<div class="flex justify-between">
+				<div class="text-lg">
+					<p class="font-semibold">Current Offer:</p>
+					<p>${loan.offer} FLOW</p>
+				</div>
+				<CardDetails {loan} />
+			</div>
+		{/if}
 
-		{#if fts.length > 0}
+		<!-- {#if fts.length > 0}
 			<div class="flexRowCenter pt-2">
 				<p class="font-bold">Fungible Tokens</p>
 			</div>
@@ -62,7 +64,6 @@
 					<FtCard {ft} />
 				{/each}
 			</div>
-		{/if}
-		<CardDetails {loan} />
+		{/if} -->
 	</div>
 </div>

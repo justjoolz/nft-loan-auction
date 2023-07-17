@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { user } from '$lib/flow/stores';
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { logIn } from '$lib/flow/actions';
 
 	function modalComponentCreateLoan(): void {
 		const modal: ModalSettings = {
@@ -7,6 +9,16 @@
 			component: 'createLoan'
 		};
 		modalStore.trigger(modal);
+	}
+
+	function handleCreateLoan(): void {
+		if ($user.loggedIn) {
+			modalComponentCreateLoan();
+		} else {
+			logIn().then(() => {
+				modalComponentCreateLoan();
+			});
+		}
 	}
 </script>
 
@@ -19,7 +31,7 @@
 			LoanAuction is a platform for lenders to auction their loans to the highest bidder.
 		</p>
 		<a href="/"
-			><button class="btn variant-filled-primary font-bold" on:click={modalComponentCreateLoan}
+			><button class="btn variant-filled-primary font-bold" on:click={handleCreateLoan}
 				>Create New Loan Request</button
 			></a
 		>
