@@ -196,6 +196,7 @@ export const createLoanAuction = async (
 		});
 
 		fcl.tx(txId).subscribe((res) => {
+			if (res.errorMessage) { alert(res.errorMessage) }
 			transactionStatus.set(statusMessages(res.status));
 			console.log({ res });
 			if (res.status === 4) {
@@ -261,6 +262,7 @@ export const lendFunds = async (
 			limit: 9999
 		});
 		fcl.tx(tx).subscribe((res) => {
+			if (res.errorMessage) { alert(res.errorMessage) }
 			transactionStatus.set(statusMessages(res.status));
 			console.log({ res });
 			if (res.status === 4) {
@@ -313,6 +315,7 @@ export const borrowFunds = async (auctionID: string, amount: string, onComplete:
 		});
 		console.log(tx);
 		fcl.tx(tx).subscribe((res) => {
+			if (res.errorMessage) { alert(res.errorMessage) }
 			transactionStatus.set(statusMessages(res.status));
 			console.log({ res });
 			if (res.status === 4) {
@@ -358,6 +361,7 @@ export const cancelAuction = async (auctionID: string, onComplete: Function) => 
 	try {
 		const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID.toString(), t.UInt64)], limit: 9999 })
 		fcl.tx(tx).subscribe(res => {
+			if (res.errorMessage) { alert(res.errorMessage) }
 			transactionStatus.set(statusMessages(res.status))
 			console.log({ res })
 			if (res.status === 4) {
@@ -441,6 +445,7 @@ export const repayFunds = async (
 		});
 		console.log(tx);
 		fcl.tx(tx).subscribe((res) => {
+			if (res.errorMessage) { alert(res.errorMessage) }
 			transactionStatus.set(statusMessages(res.status));
 			console.log({ res });
 			if (res.status === 4) {
