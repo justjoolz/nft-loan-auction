@@ -74,6 +74,9 @@
         "testnet-admin-account": {
             "address": "0x921cd899edb601be"
         },
+        "testenet-too": {
+            "address": "0x303d8e7b381e9d14"
+        },
         "mainnet-admin": {
             "address": "0x41e57fc3739f6180"
         }

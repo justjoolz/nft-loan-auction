@@ -29,7 +29,7 @@
 	on:click={() => modalComponentImage(loan)}
 >
 	<div class="flex flex-col gap-2">
-		Owner: {loan.ownersAddress}
+		Owner: {isOwner ? 'You' : loan.ownersAddress}
 		{#if loan?.nftType}
 			<!-- {#if loan.items[0].nfts.length > 0} -->
 			<div class="flexRowCenter pt-2">
@@ -45,11 +45,11 @@
 		<div>
 			{#if loan.offer}
 				Current Offer: ${loan.offer} FLOW
-				{#if isOwner}
+				<!-- {#if isOwner}
 					<p>Borrow Funds</p>
 				{:else}
 					<p class="font-bold">You are not the owner of this loan</p>
-				{/if}
+				{/if} -->
 			{/if}
 		</div>
 
