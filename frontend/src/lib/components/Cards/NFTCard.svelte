@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { NftType } from '../../flow/stores';
 
-	export let nft: NftType;
+	export let nft: any;
 </script>
 
 <div class="flexRowCenter card p-4 gap-x-3">

@@ -2,16 +2,15 @@
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import NftCard from './NFTCard.svelte';
 	import FtCard from './FTCard.svelte';
-	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
-	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
 	import CardDetails from '../DataDisplay/CardDetails.svelte';
+	import { currentUser } from '@onflow/fcl';
 
 	export let loan: any = {};
 
 	function modalComponentImage(loan: any): void {
 		const modal: ModalSettings = {
 			type: 'component',
-			component: 'card',
+			component: loan.debt > 0 ? 'active-loan' : 'loan-request',
 			meta: loan
 		};
 		modalStore.trigger(modal);
@@ -19,6 +18,8 @@
 	console.log(loan);
 
 	let fts;
+	let isOwner = false;
+	$: isOwner = loan.ownersAddress === $currentUser?.addr;
 	$: fts = loan.length ? loan?.items[1].fts : [];
 </script>
 
@@ -31,7 +32,7 @@
 		{#if loan?.nftType}
 			<!-- {#if loan.items[0].nfts.length > 0} -->
 			<div class="flexRowCenter pt-2">
-				<p class="font-bold">Non Fungible Tokens</p>
+				<p class="font-bold">Non Fungible Token (Collateral)</p>
 			</div>
 			<div class="gridDisplay2 gap-2">
 				<!-- {#each loan.items[0].nfts as nft} -->
@@ -39,6 +40,17 @@
 				<!-- {/each} -->
 			</div>
 		{/if}
+
+		<div>
+			{#if loan.offer}
+				Current Offer: ${loan.offer} FLOW
+				{#if isOwner}
+					<p>Borrow Funds</p>
+				{:else}
+					<p class="font-bold">You are not the owner of this loan</p>
+				{/if}
+			{/if}
+		</div>
 
 		{#if fts.length > 0}
 			<div class="flexRowCenter pt-2">
@@ -50,7 +62,7 @@
 				{/each}
 			</div>
 		{/if}
-		{#if loan.type === 'active'}
+		{#if loan.startTime !== null}
 			<CardDetails {loan} type="active" />
 		{:else if loan.type === 'request'}
 			<CardDetails {loan} type="request" />

@@ -2,8 +2,11 @@
 	import { requests } from '$lib/utils/requestData';
 	import LoanCard from '$lib/components/Cards/LoanCard.svelte';
 	import { TabGroup, Tab } from '@skeletonlabs/skeleton';
-	import { loans } from '$lib/utils/loanData';
+	import { loanAuctions, type LoanAuction, user } from '$lib/flow/stores';
 	let tabSet: number = 0;
+
+	let loans: LoanAuction[] = [];
+	$: loans = $loanAuctions.filter((loan) => loan.ownersAddress === $user.addr);
 </script>
 
 <div class="flexColumnCenter w-full px-10 py-20">

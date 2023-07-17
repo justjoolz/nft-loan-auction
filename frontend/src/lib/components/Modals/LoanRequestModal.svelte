@@ -6,18 +6,42 @@
 	import NftCard from '../Cards/NFTCard.svelte';
 	import FtCard from '../Cards/FTCard.svelte';
 	import OffersCard from '../Cards/OffersCard.svelte';
+	import { lendFunds, settleAuction } from '$lib/flow/actions';
+	import { selectedCollateralNFT } from '$lib/flow/stores';
 
 	export let parent: any;
 	export let loan: any = $modalStore[0].meta;
-	let amount: number;
-	let interest: number;
-	let existingOffers: any[] = [{
-		amount: 100,
-		interest: 10,
-		duration: 10
-	}];
-	let isOwned: boolean = true;
+	let currentOffer: number = loan.offer;
+	let interest: number = loan.yield;
+
+	let amount: number = 0; // input
+
+	let isOwned: boolean = false;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
+
+	// CURRENTLY USING HARDCODED VALUES FOR TESTING
+	const ftContractName = 'FlowToken';
+	const ftContractAddress = '0x7e60df042a9c0868';
+	const ftVaultStoragePath = '/storage/flowTokenVault';
+	const collectionPublicPath = '/public/' + loan.nftReceiverCap.path.value.identifier; // $selectedCollateralNFT.publicPath.identifier; // '/public/BasketCollection';
+	const ftReceiverPublicPath = '/public/flowTokenReceiver';
+
+	let nft: any;
+	$: console.log(loan);
+	$: nft = loan.nftType;
+	$: console.log({ amount });
+
+	const handleOfferFundsClick = () => {
+		lendFunds(
+			loan.id,
+			amount,
+			ftContractName,
+			ftContractAddress,
+			ftVaultStoragePath,
+			collectionPublicPath,
+			ftReceiverPublicPath
+		);
+	};
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -29,21 +53,17 @@
 		<div class="flexRowCenter relative w-full mb-2">
 			<h2 class="h2 font-bold border-b-2 border-primary-800">Loan Request Details</h2>
 		</div>
-		{#if loan.items[0].nfts.length > 0}
-			<div class="flex flex-col gap-2 bg-tertiary-700 shadow-lg p-6 pt-3 rounded-md">
-				<div class="flexRowCenter">
-					<p class="font-bold">Non Fungible Tokens</p>
-				</div>
-				<div class="gridDisplay gap-2">
-					{#each loan.items[0].nfts as nft}
-						<NftCard {nft} />
-					{/each}
-				</div>
+		<div class="flex flex-col gap-2 bg-tertiary-700 shadow-lg p-6 pt-3 rounded-md">
+			<div class="flexRowCenter">
+				<p class="font-bold">Non Fungible Token (Collateral)</p>
 			</div>
-		{/if}
+			<div class="gridDisplay gap-2">
+				<!-- <NftCard nft={{ type: nft.type, typeID: nft.typeID, kind: nft.kind }} /> -->
+			</div>
+		</div>
 
 		<div class="flexColumnCenter gap-2">
-			{#if loan.items[1].fts.length > 0}
+			<!-- {#if loan.items[1].fts.length > 0}
 				<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
 					<div class="flexRowCenter pt-2">
 						<p class="font-bold">Fungible Tokens</p>
@@ -54,7 +74,7 @@
 						{/each}
 					</div>
 				</div>
-			{/if}
+			{/if} -->
 			<div class="py-6">
 				{#if loan.type === 'active'}
 					<LoanDetails {loan} />
@@ -62,22 +82,23 @@
 					<RequestDetails {loan} />
 				{/if}
 			</div>
-			{#if isOwned && existingOffers.length < 1}
+			{#if isOwned && currentOffer}
 				<div class="flexRowCenter w-full gap-8">
 					<div class="pt-4">
-						<button class="btn variant-filled-primary font-bold">Cancel this loan</button>
+						<button
+							class="btn variant-filled-primary font-bold"
+							on:click={() => alert('need to implement on contract!')}>Cancel this loan</button
+						>
 					</div>
 				</div>
-			{:else if isOwned && existingOffers.length > 0}
+			{:else if isOwned && currentOffer}
 				<div class="flexRowCenter w-full gap-8">
 					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
 						<div class="flexRowCenter pt-2">
 							<p class="font-bold">Offers for this loan request</p>
 						</div>
 						<div class="gridDisplay gap-2 pb-4">
-							{#each existingOffers as offer}
-								<OffersCard {offer} />
-							{/each}
+							<OffersCard offer={{ interest: loan.yield, duration: loan.duration }} />
 						</div>
 					</div>
 				</div>
@@ -94,7 +115,7 @@
 							tabindex="0"
 						/>
 					</div>
-					<div class="flex flex-col w-full">
+					<!-- <div class="flex flex-col w-full">
 						<label for="interestPercentage" class="font-bold pb-2">Interest %</label>
 						<input
 							type="number"
@@ -104,10 +125,12 @@
 							bind:value={interest}
 							tabindex="0"
 						/>
-					</div>
+					</div> -->
 				</div>
 				<div class="pt-4">
-					<button class="btn variant-filled-primary font-bold">Make An Offer</button>
+					<button class="btn variant-filled-primary font-bold" on:click={handleOfferFundsClick}
+						>Make An Offer</button
+					>
 				</div>
 			{/if}
 		</div>

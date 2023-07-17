@@ -154,8 +154,8 @@ export const getOffersForAccount = async (addr: String) => {
 
 /////// transactions 
 
-export const createLoanAuction = async (nftID: number, duration: number, yield_: number, minimumLoanValueRequested: number, rollingContract: boolean) => {
-    const cadence = CREATE_LOAN_AUCTION('Basket', '0xBasket', "Basket.CollectionStoragePath", "Basket.CollectionPublicPath", "/public/flowTokenReceiver") // we can add a nft picker, for now force baskets loaned for flow tokens only
+export const createLoanAuction = async (nftID: number, duration: number, yield_: number, minimumLoanValueRequested: number, rollingContract: boolean, contractName: string, importAddress: string, collectionStoragePath: string, collectionPublicPath: string, ftReceiverPublicPath: string) => {
+    const cadence = CREATE_LOAN_AUCTION(contractName, importAddress, collectionStoragePath, collectionPublicPath, ftReceiverPublicPath)
     console.log({ cadence })
     transactionStatus.set(`depositing ${nftID} for ${duration} yeild: ${yield_} minimumLoanValueRequested: ${minimumLoanValueRequested} rollingContract: ${rollingContract}`);
 
@@ -207,7 +207,7 @@ export const lendFunds = async (auctionID: number | string, amount: number | str
           ?? panic("Could not borrow reference to the owner's Vault!")
 
           
-          let nftReceiverCap = signer.getCapability<&{NonFungibleToken.CollectionPublic}>(${collectionPublicPath})
+        let nftReceiverCap = signer.getCapability<&{NonFungibleToken.CollectionPublic}>(${collectionPublicPath})
         let ftReceiverCap = signer.getCapability<&{FungibleToken.Receiver}>(${ftReceiverPublicPath})
 
         let auctionRef = NFTLoanAuction.borrowLoanAuction(id: auctionID)
@@ -798,7 +798,7 @@ export async function handleUserChange(user: CurrentUser) {
         transactionStatus.set('logged in fetching users data ');
         fetchUsersData();
     } else {
-        usersNFTs.set({});
+        usersNFTs.set([]);
         usersFTs.set([]);
         usersBasketIds.set([]);
         selectedBasketMeta.set({

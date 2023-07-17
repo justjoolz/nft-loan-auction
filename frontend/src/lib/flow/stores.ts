@@ -5,12 +5,12 @@ import type { TokenInfo } from 'flow-native-token-registry';
 export const ssr = false;
 
 export const user = writable({} as CurrentUser);
-export const usersNFTs = writable({} as NFTCatalogEntries);
+export const usersNFTs = writable({} as NFTCatalogEntry[][]);
 export const ftTokens = writable({} as TokenInfo[]);
 export const usersFTs = writable({} as { token: string; balance: number }[]);
 
-
 export const loanAuctions = writable([] as LoanAuction[]);
+export const selectedCollateralNFT = writable({} as NFTCatalogEntry);
 
 export const usersBasketIds = writable([] as number[]);
 export const selectedBasketMeta = writable({} as BasketNFTMeta);

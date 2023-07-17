@@ -98,18 +98,18 @@
 					</div>
 				</div>
 				{#if existingOffers.length > 0}
-				<div class="flexRowCenter w-full gap-8 mt-8">
-					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
-						<div class="flexRowCenter pt-2">
-							<p class="font-bold">Offers for this loan request</p>
-						</div>
-						<div class="gridDisplay gap-2 pb-4">
-							{#each existingOffers as offer}
-								<OffersCard {offer} />
-							{/each}
+					<div class="flexRowCenter w-full gap-8 mt-8">
+						<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
+							<div class="flexRowCenter pt-2">
+								<p class="font-bold">Offers for this loan request</p>
+							</div>
+							<div class="gridDisplay gap-2 pb-4">
+								{#each existingOffers as offer}
+									<OffersCard {offer} />
+								{/each}
+							</div>
 						</div>
 					</div>
-				</div>
 				{/if}
 			{:else}
 				<div class="flex w-full gap-8">

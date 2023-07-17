@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { createLoanAuction } from '../flow/actions';
 
 	function modalComponentCreateLoan(): void {
 		const modal: ModalSettings = {
@@ -8,13 +7,6 @@
 			component: 'createLoan'
 		};
 		modalStore.trigger(modal);
-		let nftId: number,
-			duration: number,
-			_yield: number,
-			minimumLoanValueRequested: number,
-			rollingContract: boolean;
-
-		createLoanAuction(0, 100000.0, 0.1, 1000, true);
 	}
 </script>
 
