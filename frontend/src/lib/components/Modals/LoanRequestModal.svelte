@@ -3,11 +3,8 @@
 
 	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
-	import NftCard from '../Cards/NFTCard.svelte';
-	import FtCard from '../Cards/FTCard.svelte';
 	import OffersCard from '../Cards/OffersCard.svelte';
-	import { lendFunds, settleAuction } from '$lib/flow/actions';
-	import { selectedCollateralNFT } from '$lib/flow/stores';
+	import { lendFunds, borrowFunds } from '$lib/flow/actions';
 
 	export let parent: any;
 	export let loan: any = $modalStore[0].meta;
@@ -42,6 +39,13 @@
 			ftReceiverPublicPath
 		);
 	};
+
+	const handleBorrowFundsClick = () => {
+		console.log('borrowing funds yeah!');
+		borrowFunds(loan.id, amountToBorrow.toString());
+	};
+
+	let amountToBorrow: number = loan.offer;
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -133,6 +137,17 @@
 					>
 				</div>
 			{/if}
+			<div>
+				<label for="loanAmount" class="font-bold pb-2">Borrow Amount</label>
+				<input
+					type="number"
+					id="borrowAmount"
+					class="input w-full"
+					placeholder="borrow amount"
+					bind:value={amountToBorrow}
+				/>
+				<button on:click={handleBorrowFundsClick}>Borrow Funds</button>
+			</div>
 		</div>
 	</div>
 {/if}
