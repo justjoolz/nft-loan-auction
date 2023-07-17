@@ -2,6 +2,7 @@
 	import { createLoanAuction } from '$lib/flow/actions';
 	import { selectedCollateralNFT } from '$lib/flow/stores';
 	import { type ModalSettings, modalStore } from '@skeletonlabs/skeleton';
+	import { get } from 'svelte/store';
 
 	export let nft: any = {};
 
@@ -16,6 +17,7 @@
 	// }
 
 	let nftArray: number[] = [];
+	let isSelected = false;
 
 	function convertUrl(url: string) {
 		if (url.startsWith('ipfs://')) {
@@ -28,17 +30,20 @@
 		console.log({ nft });
 		selectedCollateralNFT.set(nft);
 	};
+	$: isSelected = $selectedCollateralNFT.id === nft.id;
 </script>
 
 <button
-	class={`flex flex-col items-center justify-start bg-tertiary-900 rounded-md hoverShadow p-4 `}
+	class={`flex flex-col items-center justify-start bg-tertiary-900 rounded-md hoverShadow p-4 ${
+		isSelected ? 'selectionCard' : ''
+	}`}
 >
+	<span /><span /><span /><span />
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div class="flex flex-col h-full justify-between" on:click={handleClick}>
 		<div class="flex flex-col items-center w-full">
 			<img src={convertUrl(nft.thumbnail)} alt={nft.name} class="h-12" />
 			<p class="text-sm pt-3 text-center">{nft.name}</p>
 		</div>
-		<!-- <button class="font-bold">Deposit</button> -->
 	</div>
 </button>

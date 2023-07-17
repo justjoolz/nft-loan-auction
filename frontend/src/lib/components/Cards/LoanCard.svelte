@@ -15,7 +15,7 @@
 		};
 		modalStore.trigger(modal);
 	}
-	console.log(loan);
+	// console.log(loan);
 
 	let fts;
 	let isOwner = false;

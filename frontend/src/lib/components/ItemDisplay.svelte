@@ -10,7 +10,6 @@
 		folder = !folder;
 	}
 
-	console.log(nfts, 'nfts');
 </script>
 
 <div class="flex flex-col px-10 w-full lg:w-1/2">
