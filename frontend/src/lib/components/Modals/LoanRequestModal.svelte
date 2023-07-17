@@ -4,7 +4,7 @@
 	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
 	import OffersCard from '../Cards/OffersCard.svelte';
-	import { lendFunds, borrowFunds } from '$lib/flow/actions';
+	import { lendFunds, borrowFunds, cancelAuction } from '$lib/flow/actions';
 	import NftCard from '../Cards/NFTCard.svelte';
 	import { user } from '$lib/flow/stores';
 
@@ -51,6 +51,11 @@
 
 	const handleCancelClick = () => {
 		console.log('canceling loan');
+	};
+
+	const handleCancelLoanAuctionClick = () => {
+		console.log('canceling loan auction yeah!');
+		cancelAuction(loan.id);
 	};
 </script>
 
@@ -158,6 +163,13 @@
 				/>
 				<button on:click={handleBorrowFundsClick}>Borrow Funds</button>
 			</div> -->
+			<div>
+				{#if loan.startTime}
+					Ends in: {loan.startTime + loan.duration} seconds
+				{:else}
+					<button on:click={handleCancelLoanAuctionClick}> Cancel the loan! </button>
+				{/if}
+			</div>
 		</div>
 	</div>
 {/if}

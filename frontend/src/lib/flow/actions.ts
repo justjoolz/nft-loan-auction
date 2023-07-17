@@ -301,17 +301,18 @@ export const settleAuction = (auctionID: string) => {
 
 export const cancelAuction = async (auctionID: string) => {
     const cadence = `
-    import NFTLoanAuction from "../../contracts/NFTLoanAuction.cdc"
+    import "NFTLoanAuction"
 
     transaction( auctionID: UInt64 ) {
         prepare(signer: AuthAccount) {
-            let auctionRef = NFTLoanAuction.borrowLoanAuction(id: auctionID)
+            let auctionManager = signer.borrow<&NFTLoanAuction.LoanManager>(from: NFTLoanAuction.LoanManagerStoragePath) ?? panic("can't borrow")
+            let auctionRef = auctionManager.borrowLoanProxy(id: auctionID)!
             auctionRef.cancelAuction() 
         }
     }`
 
     try {
-        const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64)] })
+        const tx = await fcl.mutate({ cadence, args: (arg, t) => [arg(auctionID, t.UInt64)], limit: 9999 })
         fcl.tx(tx).subscribe(res => {
             transactionStatus.set(res.status)
             console.log({ res })
