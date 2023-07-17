@@ -17,6 +17,9 @@
 		modalStore.trigger(modal);
 	}
 	console.log(loan);
+
+	let fts;
+	$: fts = loan.length ? loan?.items[1].fts : [];
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -37,7 +40,7 @@
 			</div>
 		{/if}
 
-		{#if loan.items[1].fts.length > 0}
+		{#if fts.length > 0}
 			<div class="flexRowCenter pt-2">
 				<p class="font-bold">Fungible Tokens</p>
 			</div>
@@ -53,5 +56,4 @@
 			<CardDetails {loan} type="request" />
 		{/if}
 	</div>
- </div> 
-
+</div>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import LoanCard from './LoanCard.svelte';
 	import type { LoanAuction } from '../../flow/stores';
 
