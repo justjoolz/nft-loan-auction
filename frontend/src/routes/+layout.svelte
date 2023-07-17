@@ -57,12 +57,17 @@
 	}
 
 	const modalComponentRegistry: Record<string, ModalComponent> = {
-		// Custom Modal 1
 		card: {
 			ref: CardModal
 		},
 		createLoan: {
 			ref: CreateLoanModal
+		},
+		'active-loan': {
+			ref: ActiveLoanModal
+		},
+		'loan-request': {
+			ref: LoanRequestModal
 		}
 	};
 
@@ -108,18 +113,16 @@
 					</span>
 				</button>
 				{#if $user.loggedIn}
-					<a href="/profile">
+					<a href="/my-loans">
 						<button class="hidden md:block btn text-lg hover:variant-ringed-primary"
-							>{$user.addr}</button
+							>My loans</button
 						></a
 					><button
 						class="hidden md:block text-lg btn hover:variant-ringed-primary"
 						on:click={unauthenticate}>Log Out</button
 					>
 				{:else}
-					<button
-						class="hidden md:block btn text-lg hover:variant-ringed-primary"
-						on:click={logIn}
+					<button class="hidden md:block btn text-lg hover:variant-ringed-primary" on:click={logIn}
 						>Log In
 					</button>
 				{/if}
