@@ -15,7 +15,7 @@
 
 	let amount: number = loan.offer * 1.1; // input
 
-	let isOwned = loan.owner === $user?.addr;
+	let isOwned = loan.ownersAddress === $user?.addr;
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 
 	// CURRENTLY USING HARDCODED VALUES FOR TESTING
@@ -57,6 +57,7 @@
 		console.log('canceling loan auction yeah!');
 		cancelAuction(loan.id);
 	};
+	console.log({ loan });
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -91,26 +92,29 @@
 				</div>
 			{/if} -->
 			<div class="py-6">
-				{#if loan.type === 'active'}
-					<LoanDetails {loan} />
-				{:else if loan.type === 'request'}
-					<RequestDetails {loan} />
-				{/if}
+				<RequestDetails {loan} />
 			</div>
-			{#if isOwned}
-				<div class="flexRowCenter w-full gap-8">
-					<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
-						<div class="flexRowCenter pt-2">
-							<p class="font-bold">Offers for this loan request</p>
-						</div>
+			<div class="flexRowCenter w-full gap-8">
+				<div class="w-full shadow-lg bg-tertiary-700 p-6 pt-3 rounded-md mb-3">
+					<div class="flexRowCenter pt-2">
+						<p class="font-bold">Offer for this loan request</p>
+					</div>
+					{#if loan.offer === null}
+						<p class="text-center w-full pt-4 pb-2">No offers yet</p>
+					{:else}
 						<div class="gridDisplay gap-2 pb-4">
 							<OffersCard
-								offer={{ interest: loan.yield * 100, duration: loan.duration / (60 * 60 * 24) }}
+								offer={{
+									offer: loan.offer,
+									interest: loan.yield * 100,
+									duration: loan.duration / (60 * 60 * 24)
+								}}
 							/>
 						</div>
-					</div>
+					{/if}
 				</div>
-			{:else}
+			</div>
+			{#if isOwned !== true}
 				<div class="flex w-full gap-8">
 					<div class="flex flex-col w-full">
 						<p>Current Offer: {loan.offer}</p>
@@ -141,17 +145,7 @@
 						>Make An Offer</button
 					>
 				</div>
-			{/if}
-
-			{#if isOwned && loan.startTime == null}
-				<div class="flexRowCenter w-full gap-8">
-					<div class="pt-4">
-						<button class="btn variant-filled-primary font-bold" on:click={handleCancelClick}
-							>Cancel this loan</button
-						>
-					</div>
-				</div>
-			{/if}
+			{/if}			
 			<!-- <div>
 				<label for="loanAmount" class="font-bold pb-2">Borrow Amount</label>
 				<input
@@ -163,11 +157,11 @@
 				/>
 				<button on:click={handleBorrowFundsClick}>Borrow Funds</button>
 			</div> -->
-			<div>
+			<div class="mt-4">
 				{#if loan.startTime}
 					Ends in: {loan.startTime + loan.duration} seconds
 				{:else}
-					<button on:click={handleCancelLoanAuctionClick}> Cancel the loan! </button>
+					<button class="btn variant-filled-primary font-bold" on:click={handleCancelLoanAuctionClick}> Cancel the loan! </button>
 				{/if}
 			</div>
 		</div>

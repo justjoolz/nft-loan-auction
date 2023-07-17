@@ -49,7 +49,7 @@
 			<div class="flex justify-between">
 				<div class="text-lg">
 					<p class="font-semibold">Current Offer:</p>
-					<p>${loan.offer} FLOW</p>
+					<p>{loan.offer} FLOW</p>
 				</div>
 				<CardDetails {loan} />
 			</div>
