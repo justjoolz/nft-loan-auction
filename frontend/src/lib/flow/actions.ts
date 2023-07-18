@@ -311,7 +311,8 @@ export const borrowFunds = async (auctionID: string, amount: string, onComplete:
 	try {
 		const tx = await fcl.mutate({
 			cadence,
-			args: (arg, t) => [arg(auctionID.toString(), t.UInt64), arg(toUFix64(amount), t.UFix64)]
+			args: (arg, t) => [arg(auctionID.toString(), t.UInt64), arg(toUFix64(amount), t.UFix64)],
+			limit: 9999
 		});
 		console.log(tx);
 		fcl.tx(tx).subscribe((res) => {
