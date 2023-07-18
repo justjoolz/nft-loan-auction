@@ -118,7 +118,7 @@
 				<LoanDetails {loan} />
 			</div>
 			{#if isUserOwner}
-				<div class="flex w-full gap-8 pb-10">
+				<div class="flex w-full gap-3 sm:gap-8 pb-10">
 					<div class="flex flex-col w-full">
 						<label for="borrow" class="font-bold pb-2">Borrow FLOW</label>
 						<input
@@ -157,7 +157,7 @@
 				</div>
 			{:else}
 				<div class="flex w-full items-center justify-center gap-8">
-					<div class="flex flex-col w-1/2">
+					<div class="flex flex-col w-full md:w-1/2">
 						<label for="loanAmount" class="font-bold pb-2">Amount</label>
 						<input
 							type="number"
@@ -186,30 +186,30 @@
 					>
 				</div>
 			{/if}
-			<div class="flex relative flex-col w-full py-4">
+			<div class="flex relative flex-col w-full py-4 overflow-x-auto">
 				<div>
 					<h2 class="h4 border-b-2 border-primary-800 pb-2 mb-4">Ledger:</h2>
 				</div>
-				<div class="flex flex-col w-full gap-1">
+				<div class="flex flex-col w-full gap-1 min-w-[1200px]">
 					{#each loan.ledger as ledger}
 						<div class="flex gap-10 border-b-[1px] border-tertiary-400 w-full">
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Timestamp:</p>
 								<p>{formatDate(ledger.lastCalculatedTimestamp)}</p>
 							</div>
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Outstanding Debt:</p>
 								<p>{ledger.debt}</p>
 							</div>
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Amount Repaid:</p>
 								<p>{ledger.repaid}</p>
 							</div>
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Fees:</p>
 								<p>{ledger.feesIncurred}</p>
 							</div>
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Interest:</p>
 								<p>{ledger.intrestIncurred}</p>
 							</div>
@@ -221,7 +221,7 @@
 
 		<div>
 			{#if loan.startTime}
-				<p>
+				<p class="text-sm md:text-base">
 					Ends at: <b
 						>{formatDate((parseFloat(loan.startTime) + parseFloat(loan.duration)).toString())}</b
 					>

@@ -6,7 +6,7 @@
 	export let loan: LoanAuction;
 </script>
 
-<div class="flexRowCenter w-full gap-8 text-lg">
+<div class="flex w-full gap-3 sm:gap-8 md:text-lg">
 	<div>
 		<p class="text-left">Loan Debt: <b>{loan.debt}</b></p>
 		<p class="text-left">Interest Incurred {loan.intrestIncurred}</p>

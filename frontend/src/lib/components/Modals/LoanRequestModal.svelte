@@ -157,7 +157,7 @@
 				</div>
 			{/if}
 			{#if isUserOwner !== true}
-				<div class="flex w-1/2 gap-8">
+				<div class="flex w-full md:w-1/2 gap-8">
 					<div class="flex flex-col w-full">
 						<p class="w-full text-center text-lg font-bold">
 							Current Offer: {loan?.offer ?? 'None'}
