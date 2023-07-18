@@ -1,15 +1,8 @@
 <script lang="ts">
-	import topFolder from '$lib/assets/top-folder.png';
 	import ItemCard from './ItemCard.svelte';
 
 	export let nfts: NFTCatalogEntry[][];
 	export let pageTitle: string;
-
-	let folder = true;
-	function updateFolder() {
-		folder = !folder;
-	}
-
 </script>
 
 <div class="flex flex-col px-10 w-full lg:w-1/2">
