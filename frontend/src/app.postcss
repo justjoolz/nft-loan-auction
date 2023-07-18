@@ -19,6 +19,92 @@ body {
 .hoverShadow {
 	@apply hover:scale-[101%] transition-all duration-300 hover:shadow-[0_2px_10px_-2.5px] hover:shadow-primary-600;
 }
+
+.selectionCard {
+	@apply shadow-[0_2px_12px_-2.5px] shadow-primary-600;
+	position: relative;
+	overflow: hidden;
+	padding-top: 16px;
+	transition: 0.2s;
+	animation: addBorder 1s 1.1s forwards;
+}
+@keyframes addBorder {
+	0% {
+		border: none;
+	}
+	100% {
+		border: #75FFFF solid 2px;
+	}
+}
+
+.selectionCard span {
+	position: absolute;
+	display: flex;
+}
+.selectionCard span:nth-child(1) {
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(90deg, transparent, #75FFFF);
+	animation: animate1 0.5s linear forwards;
+}
+@keyframes animate1 {
+	0% {
+		left: -100%;
+	}
+	100% {
+		left: 100%;
+	}
+}
+.selectionCard span:nth-child(2) {
+	top: -100%;
+	right: 0;
+	width: 2px;
+	height: 100%;
+	background: linear-gradient(180deg, transparent, #75FFFF);
+	animation: animate2 0.5s 0.25s linear forwards;
+}
+@keyframes animate2 {
+	0% {
+		top: -100%;
+	}
+	100% {
+		top: 100%;
+	}
+}
+.selectionCard span:nth-child(3) {
+	bottom: 0;
+	right: -100%;
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(270deg, transparent, #75FFFF);
+	animation: animate3 0.5s 0.5s linear forwards;
+}
+@keyframes animate3 {
+	0% {
+		right: -100%;
+	}
+	100% {
+		right: 100%;
+	}
+}
+.selectionCard span:nth-child(4) {
+	bottom: -100%;
+	left: 0;
+	width: 2px;
+	height: 100%;
+	background: linear-gradient(360deg, transparent, #75FFFF);
+	animation: animate4 0.5s 0.75s linear forwards;
+}
+@keyframes animate4 {
+	0% {
+		bottom: -100%;
+	}
+	100% {
+		bottom: 100%;
+	}
+
 .hero-back {
 	@apply min-h-[94vh] bg-no-repeat bg-cover bg-center bg-surface-50 bg-[url('$lib/assets/hero-back.jpeg')]
 }

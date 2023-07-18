@@ -20,25 +20,40 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import CardModal from '$lib/components/Modals/CardModal.svelte';
 	import CreateLoanModal from '$lib/components/Modals/CreateLoanModal.svelte';
-
 	import ActiveLoanModal from '$lib/components/Modals/ActiveLoanModal.svelte';
 	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';	
 	import { authenticate } from '@onflow/fcl';
+
 	import { onDestroy, onMount } from 'svelte';
 	import type { CurrentUser } from '@onflow/fcl/types/current-user';
 	import { handleUserChange } from '../lib/flow/actions';
 	import { setupFCL } from '../lib/flow/config';
-	// import { setupFCL } from '$lib/flow/config.client'; // in basket lives here
+	import flowIcon from '$lib/assets/flow-icon.svg';
 
-	import { user, transactionStatus } from '../lib/flow/stores';
+	import { user, transactionStatus, usersFTs, flowTokenBalance } from '../lib/flow/stores';
 	import * as fcl from '@onflow/fcl';
 
-	const t: ToastSettings = {
-		message: 'menu opened'
-	};
+	import ActiveLoanModal from '$lib/components/Modals/ActiveLoanModal.svelte';
+	import { logIn, unauthenticate } from '$lib/flow/actions';
+
+	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';
+	import { browser } from '$app/environment';
 
 	function drawerOpen() {
 		drawerStore.open();
+	}
+  
+	let slug = '';
+	let userFlowTokenBalance: number;
+	$: userFlowTokenBalance = $flowTokenBalance;
+
+	function updateSlug() {
+		const pathParts = window.location.pathname.split('/');
+		const slugIndex = 2; // Adjust this value based on the position of the "slug" in the URL
+
+		// Update the slug variable
+		slug = pathParts[slugIndex];
+
 	}
 
 	const modalComponentRegistry: Record<string, ModalComponent> = {
@@ -56,37 +71,64 @@
 		}
 	};
 
+	let tokens = $usersFTs;
 	let txUnsub: Function;
 	let userUnsub: Function;
 
 	onMount(() => {
+		if (!browser) return;
+
 		setupFCL();
+
 		fcl.currentUser.subscribe((data: CurrentUser) => user.set(data));
 		userUnsub = user.subscribe(handleUserChange);
 		txUnsub = transactionStatus.subscribe((value) => {
 			console.log('transactionStatus changed', { value });
 		});
+		updateSlug();
+		window.addEventListener('popstate', updateSlug);
 	});
 
 	onDestroy(() => {
+		if (!browser) return;
+
+		window.removeEventListener('popstate', updateSlug);
 		if (userUnsub) userUnsub();
 		if (txUnsub) txUnsub();
 	});
 </script>
 
 <Toast position="br" />
-<Modal components={modalComponentRegistry} />
-<Drawer>
+<Modal position="items-start" padding="p-8" components={modalComponentRegistry} />
+<Drawer position="right" width="w-[300px]" regionDrawer="p-12">
 	<Navigation />
+	<div class="mt-5 pt-5 border-t-[1px] border-tertiary-400">
+		{#if $user.loggedIn}
+			<div class="flex items-center gap-2 pl-4 pt-4 pb-2">
+				<img src={flowIcon} alt="" class="h-6" />{userFlowTokenBalance}
+			</div>
+			<button
+				class="block text-lg btn hover:variant-ringed-primary font-bold"
+				on:click={unauthenticate}>Log Out</button
+			>
+		{:else}
+			<button class="block btn text-lg hover:variant-ringed-primary font-bold" on:click={logIn}
+				>Log In
+			</button>
+		{/if}
+	</div>
 </Drawer>
 
 <AppShell>
 	<svelte:fragment slot="header"
 		><AppBar background="bg-surface-500" padding="px-8 py-4">
 			<svelte:fragment slot="lead">
-				<a href="/"><strong class="text-4xl">Loan Auction</strong></a></svelte:fragment
+				<a href="/"><strong class="sm:text-2xl lg:text-4xl">Loan Auction</strong></a
+				></svelte:fragment
 			>
-			<Navigation />
+			<div class="hidden md:block">
+				<Navigation />
+			</div>
 			<svelte:fragment slot="trail">
 				<button class="md:hidden btn btn-sm" on:click={drawerOpen}>
 					<span>
@@ -97,10 +139,22 @@
 						</svg>
 					</span>
 				</button>
-				<div class="flex w-[234px] justify-end" on:click={authenticate}>
-					<Avatar initials="JD" background="bg-primary-500" width="w-10" class="hidden md:block" />
-				</div></svelte:fragment
-			>
+				{#if $user.loggedIn}
+					<div class="hidden lg:flex items-center gap-2">
+						<img src={flowIcon} alt="" class="h-5 lg:h-6" />{userFlowTokenBalance}
+					</div>
+					<button
+						class="hidden md:block text-lg btn hover:variant-ringed-primary font-bold"
+						on:click={unauthenticate}>Log Out</button
+					>
+				{:else}
+					<button
+						class="hidden md:block btn text-lg hover:variant-ringed-primary font-bold"
+						on:click={logIn}
+						>Log In
+					</button>
+				{/if}
+			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 
@@ -112,5 +166,12 @@
 		<slot />
 	</div>
 	<!-- ---- / ---- -->
+	<svelte:fragment slot="footer">
+		<div class="flex flex-col items-center justify-center gap-4">
+			<p class="text-sm text-center">
+				{$transactionStatus}
+			</p>
+		</div>
+	</svelte:fragment>
 	<!-- (pageFooter) -->
 </AppShell>

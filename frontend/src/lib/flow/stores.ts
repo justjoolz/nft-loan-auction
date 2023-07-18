@@ -5,17 +5,20 @@ import type { TokenInfo } from 'flow-native-token-registry';
 export const ssr = false;
 
 export const user = writable({} as CurrentUser);
-export const usersNFTs = writable({} as NFTCatalogEntries);
+export const usersNFTs = writable({} as NFTCatalogEntry[][]);
 export const ftTokens = writable({} as TokenInfo[]);
 export const usersFTs = writable({} as { token: string; balance: number }[]);
 
-
 export const loanAuctions = writable([] as LoanAuction[]);
+export const selectedCollateralNFT = writable({} as NFTCatalogEntry);
+export const loansForAccount = writable([] as LoanAuction[]);
+export const flowTokenBalance = writable(0);
 
 export const usersBasketIds = writable([] as number[]);
 export const selectedBasketMeta = writable({} as BasketNFTMeta);
 
 export const transactionStatus = writable();
+export const toastMessage = writable('');
 export const walletContents = writable();
 export const basket = writable();
 export const walletNFTWithdrawIds = writable([] as number[]);
@@ -38,6 +41,7 @@ export function ftDictionaryToArray(dictionary: any) {
 
 
 export interface LoanAuction {
+	offeringAddress: string;
     id: string,
     debt: string,
     repaid: string,

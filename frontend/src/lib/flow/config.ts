@@ -3,8 +3,8 @@ import flowJSON from "./flow.json"
 import { PUBLIC_FLOW_ACCESS_NODE, PUBLIC_FLOW_DISCOVERY_WALLET, PUBLIC_FLOW_NETWORK } from "$env/static/public"
 export const ssr = false;
 
-export const setupFCL = () => {
-    config({
+export const setupFCL = async () => {
+    return config({
         "flow.network": PUBLIC_FLOW_NETWORK,
         "accessNode.api": PUBLIC_FLOW_ACCESS_NODE,
         "discovery.wallet": PUBLIC_FLOW_DISCOVERY_WALLET,
@@ -15,5 +15,4 @@ export const setupFCL = () => {
         // "0xNFTRetrieval": "0x324c34e1c517e4db", // Mainnet: "0x49a7cda3a1eecc29"
         // "0xBasket": network === "testnet" ? "0xca909b58fecc185a" : "0xNotYetDeployed"
     }).load({ flowJSON: flowJSON })
-    console.log("FCL config loaded", flowJSON)
 }

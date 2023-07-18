@@ -65,8 +65,7 @@
         "NFTLoanAuction": {
             "source": "./contracts/NFTLoanAuction.cdc",
             "aliases": {
-                "testnet": "0x921cd899edb601be",
-                "mainnet": "0x41e57fc3739f6180"
+                "testnet": "0x303d8e7b381e9d14"
             }
         }
     },
@@ -74,13 +73,16 @@
         "testnet-admin-account": {
             "address": "0x921cd899edb601be"
         },
+        "testnet-too": {
+            "address": "0x303d8e7b381e9d14"
+        },
         "mainnet-admin": {
             "address": "0x41e57fc3739f6180"
         }
     },
     "deployments": {
         "testnet": {
-            "testnet-admin-account": [
+            "testnet-too": [
                 "NFTLoanAuction"
             ]
         },

@@ -1,20 +1,22 @@
 <script lang="ts">
-	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { loans } from '$lib/utils/loanData';
-	import { requests } from '$lib/utils/requestData';
 	import Hero from '$lib/components/Hero.svelte';
 	import CardDisplay from '$lib/components/Cards/CardDisplay.svelte';
 	import { getAllLoanAuctionMeta } from '../lib/flow/actions';
 	import { loanAuctions, type LoanAuction } from '../lib/flow/stores';
 
 	let activeLoanAuctions: LoanAuction[] = [];
-	$: activeLoanAuctions = $loanAuctions.filter((loan) => loan.ledger.length > 0);
+	let loanRequests: LoanAuction[] = [];
+
+	$: loanRequests = $loanAuctions.filter((loan) => loan.startTime === null); // Loan startTime is set when the collateral owner borrows offered funds.
+	$: activeLoanAuctions = $loanAuctions.filter((loan) => loan.startTime !== null); // Loan ledger is set when the borrower accepts the loan offer.
+
 </script>
 
 <div class="h-full mx-auto flex justify-center items-center">
 	<div class="w-full">
 		<Hero />
 		<CardDisplay title={'Active Loans'} loans={activeLoanAuctions} />
-		<CardDisplay title={'Loan Requests'} loans={$loanAuctions} />
+		<CardDisplay title={'Loan Requests'} loans={loanRequests} />
+		<CardDisplay title={'All Loans'} loans={$loanAuctions} />
 	</div>
 </div>
