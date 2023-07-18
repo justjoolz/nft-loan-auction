@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { modalStore, type ModalSettings, toastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import {
+		modalStore,
+		type ModalSettings,
+		toastStore,
+		type ToastSettings
+	} from '@skeletonlabs/skeleton';
 
 	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
 	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
@@ -26,7 +31,7 @@
 
 	let isUserOwner = false;
 	$: isUserOwner = $user.addr === loan.ownersAddress;
-	$: toastMessage = {$transactionStatus};
+	$: toastMessage = { $transactionStatus };
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 	const t: ToastSettings = {
 		message: toastMessage
@@ -91,7 +96,6 @@
 	};
 </script>
 
-
 {#if $modalStore[0]}
 	<button class="btn-icon variant-filled {cButton}" on:click={parent.onClose}>X</button>
 	<div
@@ -99,7 +103,7 @@
 	>
 		<div class="flexRowCenter relative w-full mb-2">
 			<h2 class="h2 font-bold border-b-2 border-primary-800">Active Loan Details</h2>
-		</div>		
+		</div>
 		<div class="flex flex-col gap-2 bg-tertiary-700 shadow-lg p-6 pt-3 rounded-md">
 			<div class="flexRowCenter">
 				<p class="font-bold">Non Fungible Token (Collateral)</p>
@@ -114,7 +118,7 @@
 				<LoanDetails {loan} />
 			</div>
 			{#if isUserOwner}
-				<div class="flex w-full gap-8 pb-10">
+				<div class="flex w-full gap-3 sm:gap-8 pb-10">
 					<div class="flex flex-col w-full">
 						<label for="borrow" class="font-bold pb-2">Borrow FLOW</label>
 						<input
@@ -153,7 +157,7 @@
 				</div>
 			{:else}
 				<div class="flex w-full items-center justify-center gap-8">
-					<div class="flex flex-col w-1/2">
+					<div class="flex flex-col w-full md:w-1/2">
 						<label for="loanAmount" class="font-bold pb-2">Amount</label>
 						<input
 							type="number"
@@ -182,30 +186,30 @@
 					>
 				</div>
 			{/if}
-			<div class="flex relative flex-col w-full py-4">
+			<div class="flex relative flex-col w-full py-4 overflow-x-auto">
 				<div>
 					<h2 class="h4 border-b-2 border-primary-800 pb-2 mb-4">Ledger:</h2>
 				</div>
-				<div class="flex flex-col w-full gap-1">
+				<div class="flex flex-col w-full gap-1 min-w-[1200px]">
 					{#each loan.ledger as ledger}
 						<div class="flex gap-10 border-b-[1px] border-tertiary-400 w-full">
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Timestamp:</p>
 								<p>{formatDate(ledger.lastCalculatedTimestamp)}</p>
 							</div>
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Outstanding Debt:</p>
 								<p>{ledger.debt}</p>
 							</div>
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Amount Repaid:</p>
 								<p>{ledger.repaid}</p>
 							</div>
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Fees:</p>
 								<p>{ledger.feesIncurred}</p>
 							</div>
-							<div class="flex">
+							<div class="flex text-sm md:text-base">
 								<p class="font-bold pr-2">Interest:</p>
 								<p>{ledger.intrestIncurred}</p>
 							</div>
@@ -217,7 +221,7 @@
 
 		<div>
 			{#if loan.startTime}
-				<p>
+				<p class="text-sm md:text-base">
 					Ends at: <b
 						>{formatDate((parseFloat(loan.startTime) + parseFloat(loan.duration)).toString())}</b
 					>
@@ -231,57 +235,6 @@
 					Cancel the loan!
 				</button>
 			{/if}
-=======
-
-	export let parent: any;
-	export let loan: any = $modalStore[0].meta;
-	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
-</script>
-
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-{#if $modalStore[0]}
-	<button class="btn-icon variant-filled {cButton}" on:click={parent.onClose}>X</button>
-	<div
-		class="card p-6 md:p-10 variant-filled-tertiary min-w-[90%] md:min-w-4/5 min-h-[90%] md:min-h-4/5 flex flex-col justify-center gap-4 relative cursor-pointer hoverShadow"
-	>
-		<div class="flexRowCenter relative w-full">
-			<h2 class="h2 font-bold border-b-2 border-primary-800">Active Loan Details</h2>
-		</div>
-		<div class="flex flex-col gap-2 bg-tertiary-700 p-6 pt-3 rounded-md">
-			{#if loan.items[0].nfts.length > 0}
-				<div class="flexRowCenter">
-					<p class="font-bold">Non Fungible Tokens</p>
-				</div>
-				<div class="gridDisplay gap-2">
-					{#each loan.items[0].nfts as nft}
-						<NftCard {nft} />
-					{/each}
-				</div>
-			{/if}
-		</div>
-
-		<div class="flexColumnCenter gap-2">
-			{#if loan.items[1].fts.length > 0}
-				<div class="flexRowCenter pt-2">
-					<p class="font-bold">Fungible Tokens</p>
-				</div>
-				<div class="gridDisplay gap-2 pb-4">
-					{#each loan.items[1].fts as ft}
-						<FtCard {ft} />
-					{/each}
-				</div>
-			{/if}
-			{#if loan.type === 'active'}
-				<LoanDetails {loan} />
-			{:else if loan.type === 'request'}
-				<RequestDetails {loan} />
-			{/if}
-			<div class="pt-4">
-				<button class="btn variant-filled-primary font-bold">Make an offer</button>
-			</div>
-			<div class="flex relative w-full py-4">
-				<h2 class="h4 border-b-2 border-primary-800">Ledger:</h2>
-			</div>
 		</div>
 	</div>
 {/if}

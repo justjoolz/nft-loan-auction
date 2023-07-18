@@ -20,9 +20,6 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import CardModal from '$lib/components/Modals/CardModal.svelte';
 	import CreateLoanModal from '$lib/components/Modals/CreateLoanModal.svelte';
-	import ActiveLoanModal from '$lib/components/Modals/ActiveLoanModal.svelte';
-	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';	
-	import { authenticate } from '@onflow/fcl';
 
 	import { onDestroy, onMount } from 'svelte';
 	import type { CurrentUser } from '@onflow/fcl/types/current-user';
@@ -42,7 +39,7 @@
 	function drawerOpen() {
 		drawerStore.open();
 	}
-  
+
 	let slug = '';
 	let userFlowTokenBalance: number;
 	$: userFlowTokenBalance = $flowTokenBalance;
@@ -53,7 +50,6 @@
 
 		// Update the slug variable
 		slug = pathParts[slugIndex];
-
 	}
 
 	const modalComponentRegistry: Record<string, ModalComponent> = {

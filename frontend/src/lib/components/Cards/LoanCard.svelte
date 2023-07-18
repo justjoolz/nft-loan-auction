@@ -64,8 +64,7 @@
 		</div> -->
 	</div>
 
-
-		<!-- {#if fts.length > 0}
+	<!-- {#if fts.length > 0}
 			<div class="flexRowCenter pt-2">
 				<p class="font-bold">Fungible Tokens</p>
 			</div>
@@ -76,5 +75,4 @@
 			</div>
 
 		{/if} -->
-	</div>
 </div>
