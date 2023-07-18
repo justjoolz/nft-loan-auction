@@ -94,13 +94,23 @@
 		getAllLoanAuctionMeta();
 	});
 	
+=======
+	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+
+	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
+	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
+	import NftCard from '../Cards/NFTCard.svelte';
+	import FtCard from '../Cards/FTCard.svelte';
+
+	export let parent: any;
+	export let loan: any = $modalStore[0].meta;
+	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 {#if $modalStore[0]}
 	<button class="btn-icon variant-filled {cButton}" on:click={parent.onClose}>X</button>
-	<div
-		class="card p-6 md:p-10 variant-filled-tertiary min-w-[90%] md:min-w-4/5 min-h-[90%] md:min-h-4/5 flex flex-col justify-center gap-4"
+	<div class="card p-6 md:p-10 variant-filled-tertiary min-w-[90%] md:min-w-4/5 min-h-[90%] md:min-h-4/5 flex flex-col justify-center gap-4"
 	>
 		<div class="flexRowCenter relative w-full mb-2">
 			<h2 class="h2 font-bold border-b-2 border-primary-800">Loan Request Details</h2>

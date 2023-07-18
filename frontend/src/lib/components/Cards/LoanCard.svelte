@@ -62,16 +62,19 @@
 				{/if}
 			{/if}
 		</div> -->
+	</div>
+
 
 		<!-- {#if fts.length > 0}
 			<div class="flexRowCenter pt-2">
 				<p class="font-bold">Fungible Tokens</p>
 			</div>
-			<div class="gridDisplay2 gap-2">
+			<div class="gridDisplay2 gap-2 pb-4">
 				{#each loan.items[1].fts as ft}
 					<FtCard {ft} />
 				{/each}
 			</div>
+
 		{/if} -->
 	</div>
 </div>

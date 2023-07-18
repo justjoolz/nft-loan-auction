@@ -22,6 +22,7 @@
 	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
 </script>
 
+
 <button class="block md:hidden btn-icon variant-filled {cButton}" on:click={drawerClose}>X</button>
 
 <nav class="list-nav w-full">
@@ -31,5 +32,6 @@
 		{#if $user.loggedIn}
 			<li><a href="/my-loans" on:click={drawerClose}>My Loans</a></li>
 		{/if}
+
 	</ul>
 </nav>
