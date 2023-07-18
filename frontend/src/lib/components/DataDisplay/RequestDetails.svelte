@@ -12,10 +12,4 @@
 		</p>
 	</div>
 	<p class="text-left">Yield: <b>{parseFloat(loan.yield) * 100}%</b></p>
-<div class="flexColumnCenter w-full">
-	<div>
-		<p class="text-left">Minimum Loan amount: ${loan.minimumLoanAmount}</p>
-		<p class="text-left">Minimum Loan duration: {loan.minimumLoanDuration} Days</p>
-		<p class="text-left">Requested Date: {loan.requestDate}</p>
-	</div>
 </div>

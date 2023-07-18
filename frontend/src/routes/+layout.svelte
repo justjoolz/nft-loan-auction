@@ -33,10 +33,8 @@
 	import { user, transactionStatus, usersFTs, flowTokenBalance } from '../lib/flow/stores';
 	import * as fcl from '@onflow/fcl';
 
-	import ActiveLoanModal from '$lib/components/Modals/ActiveLoanModal.svelte';
 	import { logIn, unauthenticate } from '$lib/flow/actions';
 
-	import LoanRequestModal from '$lib/components/Modals/LoanRequestModal.svelte';
 	import { browser } from '$app/environment';
 
 	function drawerOpen() {

@@ -92,19 +92,7 @@
 
 	onMount(() => {
 		getAllLoanAuctionMeta();
-	});
-	
-=======
-	import { modalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-
-	import LoanDetails from '../DataDisplay/LoanDetails.svelte';
-	import RequestDetails from '../DataDisplay/RequestDetails.svelte';
-	import NftCard from '../Cards/NFTCard.svelte';
-	import FtCard from '../Cards/FTCard.svelte';
-
-	export let parent: any;
-	export let loan: any = $modalStore[0].meta;
-	const cButton = 'fixed top-4 right-4 z-50 font-bold shadow-xl';
+	});	
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
